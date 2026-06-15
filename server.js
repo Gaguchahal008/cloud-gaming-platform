@@ -1,9 +1,8 @@
 const express = require('express');
 const path = require('path');
-const fs = require('fs'); // Core Node module to read/write files on your hard drive
+const fs = require('fs');
 const app = express();
 
-// CRITICAL FOR DEPLOYMENT: Uses the internet provider's dynamic port, or 3000 locally
 const PORT = process.env.PORT || 3000; 
 
 app.use(express.static(path.join(__dirname)));
@@ -15,12 +14,11 @@ const DB_FILE = path.join(__dirname, 'database.json');
 function readDatabase() {
     try {
         if (!fs.existsSync(DB_FILE)) {
-            // Create default profile data if database doesn't exist yet
             const defaultData = {
                 gamertag: "Young Goat",
                 isSteamSynced: false,
                 steamId: null,
-                walletBalance: 250, 
+                playtimeMinutes: 60, // Users start with 60 free minutes of trial playtime
                 activeSession: false
             };
             fs.writeFileSync(DB_FILE, JSON.stringify(defaultData, null, 2));
@@ -29,12 +27,10 @@ function readDatabase() {
         const fileContent = fs.readFileSync(DB_FILE, 'utf8');
         return JSON.parse(fileContent);
     } catch (err) {
-        console.error("Error reading database file, returning basic memory state:", err);
-        return { gamertag: "Young Goat", isSteamSynced: false, steamId: null, walletBalance: 250, activeSession: false };
+        return { gamertag: "Young Goat", isSteamSynced: false, steamId: null, playtimeMinutes: 60, activeSession: false };
     }
 }
 
-// Helper Function: Write and save data securely to your database file
 function saveDatabase(data) {
     try {
         fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
@@ -47,12 +43,10 @@ function saveDatabase(data) {
 //           SERVER API ENDPOINTS
 // ==========================================
 
-// Endpoint: Returns current state variables (Wallet, Sync Status, Gamertag)
 app.get('/api/user-status', (req, res) => {
     res.json(readDatabase());
 });
 
-// Endpoint: Update profile identity configurations and save to database file
 app.post('/api/update-profile', (req, res) => {
     const { gamertag } = req.body;
     if (gamertag && gamertag.trim() !== "") {
@@ -61,69 +55,51 @@ app.post('/api/update-profile', (req, res) => {
         saveDatabase(session);
         return res.json({ success: true, gamertag: session.gamertag });
     }
-    res.status(400).json({ success: false, message: "Invalid identity parameter details." });
+    res.status(400).json({ success: false, message: "Invalid identity parameters." });
 });
 
-// Endpoint: Handles fake Steam account linkage simulation
-app.post('/api/sync-steam', (req, res) => {
-    let session = readDatabase();
-    session.isSteamSynced = true;
-    session.steamId = "76561198032145678"; // Generates a mock SteamID64
-    saveDatabase(session);
-    res.json({ success: true, message: "Steam Connected & State Saved!", steamId: session.steamId });
-});
-
-// Endpoint: Process balance increments via portal deposits
-app.post('/api/add-funds', (req, res) => {
-    const { amount } = req.body;
-    if (amount && !isNaN(amount)) {
+// Endpoint: Adds exact playtime blocks based on purchased packages
+app.post('/api/add-playtime', (req, res) => {
+    const { minutes } = req.body;
+    if (minutes && !isNaN(minutes)) {
         let session = readDatabase();
-        session.walletBalance += parseInt(amount);
+        session.playtimeMinutes += parseInt(minutes);
         saveDatabase(session);
-        return res.json({ success: true, newBalance: session.walletBalance });
+        return res.json({ success: true, newPlaytime: session.playtimeMinutes });
     }
-    res.status(400).json({ success: false, message: "Invalid payload parameters." });
+    res.status(400).json({ success: false, message: "Invalid package allocation parameters." });
 });
 
-// Endpoint: Deducts funds and checks parameters for gaming allocations
+// Endpoint: Deducts exactly 60 minutes when a game stream initializes
 app.post('/api/launch-game', (req, res) => {
     const { gameName } = req.body;
     let session = readDatabase();
 
-    if (session.walletBalance < 100) {
-        return res.status(400).json({ success: false, message: "Low Balance! Minimum ₹100 required per hour." });
+    if (session.playtimeMinutes < 60) {
+        return res.status(400).json({ success: false, message: "Insufficient Playtime! You need at least 60 mins remaining." });
     }
 
-    session.walletBalance -= 100; // Deducts exactly 100 per hour session block
+    session.playtimeMinutes -= 60; // Consume exactly 1 hour of their total playtime bank
     session.activeSession = true;
     saveDatabase(session);
-    res.json({ success: true, message: `Streaming instance active for ${gameName}!`, newBalance: session.walletBalance });
+    res.json({ success: true, message: `Streaming rig launched for ${gameName}!`, newPlaytime: session.playtimeMinutes });
 });
 
-// Endpoint: Mark streaming session inactive and free up server hardware capacity
 app.post('/api/terminate-session', (req, res) => {
     let session = readDatabase();
     session.activeSession = false;
     saveDatabase(session);
-    res.json({ success: true, message: "Session stopped safely. Cloud states committed." });
+    res.json({ success: true, message: "Session closed safely." });
 });
 
 // ==========================================
-//          PAGES SUB-FOLDER ROUTING
+//          ROUTING CONFIGURATIONS
 // ==========================================
 app.get('/pages/game.html', (req, res) => res.sendFile(path.join(__dirname, 'pages', 'game.html')));
 app.get('/pages/login.html', (req, res) => res.sendFile(path.join(__dirname, 'pages', 'login.html')));
 app.get('/pages/pricing.html', (req, res) => res.sendFile(path.join(__dirname, 'pages', 'pricing.html')));
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 
-// Direct fallback route to handle the main landing interface
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-// Start the server using the dynamic deployment port configuration
 app.listen(PORT, () => {
-    console.log(`====================================================`);
-    console.log(`🚀 Production Storage Server Active on Port: ${PORT}`);
-    console.log(`🔗 Local Testing Link: http://localhost:${PORT}`);
-    console.log(`====================================================`);
+    console.log(`🚀 Playtime Engine Active on Port: ${PORT}`);
 });
