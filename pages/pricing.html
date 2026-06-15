@@ -3,72 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cloud Wallet & Playtime Passes</title>
+    <title>Instant UPI Billing Portal</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', sans-serif; }
         body { background-color: #0d0d0d; color: #ffffff; padding: 25px 5% 100px 5%; }
         .back-link { color: #76b900; text-decoration: none; font-weight: bold; display: inline-block; margin-bottom: 20px; }
         
-        /* WALLET CARD HUB */
-        .wallet-hub-panel { background: #161616; border: 1px solid #222; border-radius: 12px; padding: 20px; margin-bottom: 35px; display: flex; flex-direction: column; gap: 15px; }
-        .balance-label { font-size: 13px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; }
-        .balance-value { font-size: 36px; font-weight: 800; color: #76b900; }
-        .quick-deposit-row { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; }
-        .btn-add-cash { background: #222; border: 1px solid #333; color: #fff; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; white-space: nowrap; }
+        .wallet-hub-panel { background: #161616; border: 1px solid #222; border-radius: 12px; padding: 20px; margin-bottom: 35px; }
+        .balance-label { font-size: 13px; color: #aaa; text-transform: uppercase; }
+        .balance-value { font-size: 36px; font-weight: 800; color: #76b900; margin: 5px 0; }
         
-        h2 { font-size: 22px; margin-bottom: 15px; border-left: 4px solid #76b900; padding-left: 10px; }
+        .deposit-header { font-size: 15px; font-weight: bold; margin-bottom: 12px; color: #aaa; }
+        .quick-deposit-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .btn-add-cash { background: #222; border: 1px solid #333; color: #fff; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; text-align: center; }
+        .btn-add-cash span { display: block; font-size: 10px; color: #76b900; font-weight: normal; margin-top: 2px;}
+
+        h2 { font-size: 20px; margin-bottom: 15px; border-left: 4px solid #76b900; padding-left: 10px; }
         .billing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
         .tier-card { background: #161616; border: 1px solid #222; border-radius: 12px; padding: 20px; text-align: center; }
         .tier-card.featured { border-color: #76b900; background: linear-gradient(145deg, #161616, #131f0d); }
-        .time-title { font-size: 18px; font-weight: bold; }
         .price { font-size: 28px; font-weight: 800; margin: 12px 0; color: #76b900; }
         .buy-btn { background: #222; border: 1px solid #444; color: #fff; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .tier-card.featured .buy-btn { background: #76b900; color: #000; border: none; }
+
+        .upi-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 5000; justify-content: center; align-items: center; padding: 20px; }
+        .upi-modal-box { background: #161616; border: 1px solid #333; border-radius: 16px; width: 100%; max-width: 380px; padding: 25px; text-align: center; }
+        .btn-launch-intent { background: #76b900; color: #000; font-weight: bold; padding: 14px; border-radius: 8px; text-decoration: none; display: block; margin-bottom: 15px; font-size: 15px; text-align: center; }
+        .btn-verify-payment { background: #1b2838; color: #66c0f4; border: 1px solid #66c0f4; font-weight: bold; padding: 12px; border-radius: 8px; width: 100%; cursor: pointer; font-size: 14px; margin-bottom: 10px; }
+        .btn-cancel-payment { background: transparent; border: none; color: #888; font-size: 12px; cursor: pointer; text-decoration: underline; }
         @media (max-width: 768px) { .billing-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-    <a href="/" class="back-link">← Return to Dashboard</a>
+    <a href="/" class="back-link">← Return to Home Dashboard</a>
     
     <div class="wallet-hub-panel">
-        <div>
-            <div class="balance-label">Available Cloud Wallet Funds</div>
-            <div class="balance-value" id="cash-display">₹0</div>
-            <div style="font-size:12px; color:#aaa; margin-top:4px;" id="minutes-display">Active Time Bank: 0 Mins</div>
-        </div>
+        <div class="balance-label">Cloud Rigs Wallet Cash</div>
+        <div class="balance-value" id="cash-display">₹0</div>
+        <div style="font-size:12px; color:#aaa; margin-bottom: 20px;" id="minutes-display">Active Time Bank: 0 Mins</div>
+        
+        <div class="deposit-header">Select Recharge Amount via BHIM UPI:</div>
         <div class="quick-deposit-row">
-            <button class="btn-add-cash" onclick="depositCash(100)">+ Add ₹100</button>
-            <button class="btn-add-cash" onclick="depositCash(500)">+ Add ₹500</button>
-            <button class="btn-add-cash" onclick="depositCash(1000)">+ Add ₹1000</button>
+            <button class="btn-add-cash" onclick="triggerDirectUPI(100)">₹100 <span>+ Instant Deposit</span></button>
+            <button class="btn-add-cash" onclick="triggerDirectUPI(500)">₹500 <span>+ Instant Deposit</span></button>
+            <button class="btn-add-cash" onclick="triggerDirectUPI(1000)">₹1000 <span>+ Instant Deposit</span></button>
         </div>
     </div>
 
-    <h2>Convert Wallet Funds to Playtime Passes</h2>
+    <h2>Convert Wallet Cash to Session Playtime Passes</h2>
     <div class="billing-grid">
         <div class="tier-card">
-            <div class="time-title">60 Mins Pass</div>
+            <div style="font-weight: bold;">60 Mins Pass</div>
             <div class="price">₹40</div>
-            <button class="buy-btn" onclick="buyPass(40, 60)">Deduct ₹40</button>
+            <button class="buy-btn" onclick="buyPass(40, 60)">Convert ₹40</button>
         </div>
         <div class="tier-card featured">
-            <div class="time-title">5 Hours Pass</div>
+            <div style="font-weight: bold; color: #76b900;">5 Hours Pass</div>
             <div class="price">₹200</div>
-            <button class="buy-btn" onclick="buyPass(200, 300)">Deduct ₹200</button>
+            <button class="buy-btn" onclick="buyPass(200, 300)">Convert ₹200</button>
         </div>
         <div class="tier-card">
-            <div class="time-title">24 Hour Pass</div>
+            <div style="font-weight: bold;">24 Hour Pass</div>
             <div class="price">₹500</div>
-            <button class="buy-btn" onclick="buyPass(500, 1440)">Deduct ₹500</button>
+            <button class="buy-btn" onclick="buyPass(500, 1440)">Convert ₹500</button>
         </div>
-        <div class="tier-card">
-            <div class="time-title">7 Day Pass</div>
-            <div class="price">₹1200</div>
-            <button class="buy-btn" onclick="buyPass(1200, 10080)">Deduct ₹1200</button>
+    </div>
+
+    <div class="upi-overlay" id="upi-sheet">
+        <div class="upi-modal-box">
+            <div style="font-size: 32px; margin-bottom: 10px;">⚡</div>
+            <div id="payment-headline" style="font-size: 18px; font-weight: bold; margin-bottom: 12px;">Paying Amount</div>
+            
+            <a href="#" class="btn-launch-intent" id="upi-intent-link">👉 Launch PhonePe / GPay / Paytm</a>
+            
+            <p style="font-size: 12px; color: #888; margin-bottom: 20px;">Tap the green button above. It will instantly launch your phone's payment apps with the amount and merchant info pre-filled automatically.</p>
+
+            <button class="btn-verify-payment" onclick="confirmPaymentSuccess()">I Have Sent the Money</button>
+            <button class="btn-cancel-payment" onclick="closePaymentSheet()">Cancel</button>
         </div>
     </div>
 
     <script>
+        let pendingDepositAmount = 0;
+
         async function fetchSystemState() {
             try {
                 const res = await fetch('/api/user-status');
@@ -78,16 +96,49 @@
             } catch(e) { console.log(e); }
         }
 
-        async function depositCash(amt) {
+        async function triggerDirectUPI(amount) {
+            pendingDepositAmount = amount;
+            document.getElementById('payment-headline').innerText = `Paying ₹${amount}`;
+            
+            try {
+                const configRes = await fetch('/api/payment-config');
+                const config = await configRes.json();
+                
+                // Formulate deep link protocol schema parameters automatically
+                const encodedPayeeName = encodeURIComponent(config.payeeName);
+                const upiLink = `upi://pay?pa=${config.vpa}&pn=${encodedPayeeName}&am=${amount}&cu=INR&tn=CloudRigs%20Wallet%20Topup`;
+                
+                // Mount to link attribute
+                document.getElementById('upi-intent-link').href = upiLink;
+                
+                // On modern mobile devices, try an automatic click shortcut trigger immediately
+                if(/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+                    window.location.href = upiLink;
+                } else {
+                    document.getElementById('upi-sheet').style.display = 'flex';
+                }
+            } catch(e) { alert("Could not fetch payment configuration rules."); }
+        }
+
+        async function confirmPaymentSuccess() {
             try {
                 const res = await fetch('/api/add-funds', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ amount: amt })
+                    body: JSON.stringify({ amount: pendingDepositAmount })
                 });
-                const data = await res.json();
-                fetchSystemState();
-            } catch(e) { alert("Deposit error"); }
+                
+                if (res.ok) {
+                    alert(`Wallet Refreshed! Added ₹${pendingDepositAmount} securely.`);
+                    closePaymentSheet();
+                    fetchSystemState();
+                }
+            } catch(e) { alert("Network validation error."); }
+        }
+
+        function closePaymentSheet() {
+            document.getElementById('upi-sheet').style.display = 'none';
+            pendingDepositAmount = 0;
         }
 
         async function buyPass(costAmount, minutesAmount) {
@@ -100,12 +151,12 @@
                 const data = await res.json();
                 
                 if (res.ok) {
-                    alert(`Pass Activated successfully!\nConverted ₹${costAmount} into ${minutesAmount} Mins.`);
+                    alert(`Pass Activated! Received ${minutesAmount} Mins.`);
                     fetchSystemState();
                 } else {
-                    alert(`❌ Transaction Declined: ${data.message}`);
+                    alert(`Declined: ${data.message}`);
                 }
-            } catch(e) { alert("Processing error"); }
+            } catch(e) { alert("Conversion error."); }
         }
 
         window.onload = fetchSystemState;
