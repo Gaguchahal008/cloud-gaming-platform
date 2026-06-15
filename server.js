@@ -5,8 +5,8 @@ const app = express();
 
 const PORT = process.env.PORT || 3000; 
 
-// 🔥 CONFIGURATION: Type your exact personal UPI ID here (e.g., yournumber@paytm, name@oksbi)
-const CONFIG_MERCHANT_UPI_ID = "amritinder@okaxis"; 
+// 🔥 CONFIGURATION: Your live active UPI ID has been updated here!
+const CONFIG_MERCHANT_UPI_ID = "8872791624@fam"; 
 const CONFIG_MERCHANT_NAME = "CloudRigs Arcade";
 
 app.use(express.static(path.join(__dirname)));
@@ -78,7 +78,7 @@ app.post('/api/buy-pass', (req, res) => {
     if (session.walletBalance < cost) {
         return res.status(400).json({ 
             success: false, 
-            message: `Insufficient Cash! You need ₹${cost} to active this pass.` 
+            message: `Insufficient Cash! You need ₹${cost} to activate this pass.` 
         });
     }
 
