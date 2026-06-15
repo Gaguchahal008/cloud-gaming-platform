@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing Plans & Cloud Wallet</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background-color: #0a0a0a; color: #ffffff; padding: 40px 5%; }
+        .back-link { color: #76b900; text-decoration: none; font-weight: bold; display: inline-block; margin-bottom: 30px; }
+        h1 { margin-bottom: 10px; }
+        .subtitle { color: #aaa; margin-bottom: 40px; }
+        
+        .billing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; max-width: 1000px; }
+        .tier-card { background: #121212; border: 1px solid #222; border-radius: 8px; padding: 30px; text-align: center; position: relative; }
+        .tier-card.featured { border-color: #76b900; background: linear-gradient(145deg, #121212, #182210); }
+        .badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #76b900; color: #000; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        
+        .price { font-size: 36px; font-weight: 800; color: #fff; margin: 20px 0; }
+        .price span { font-size: 16px; color: #aaa; font-weight: normal; }
+        .features-list { list-style: none; color: #aaa; font-size: 14px; line-height: 2; margin-bottom: 30px; text-align: left; padding-left: 20px; }
+        
+        .buy-btn { background: transparent; border: 1px solid #444; color: #fff; width: 100%; padding: 12px; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .tier-card.featured .buy-btn { background: #76b900; color: #000; border: none; }
+        .tier-card.featured .buy-btn:hover { box-shadow: 0 0 15px rgba(118,185,0,0.4); }
+    </style>
+</head>
+<body>
+
+    <a href="/" class="back-link">← Return to Matrix Terminal</a>
+    <h1>Cloud Resource Allocations</h1>
+    <p class="subtitle">Pay-as-you-go parameters tracking directly down to local sub-second processing matrices.</p>
+
+    <div class="billing-grid">
+        <div class="tier-card">
+            <h3>Trial Core Balance</h3>
+            <div class="price">₹100 <span>/ Standard</span></div>
+            <ul class="features-list">
+                <li>• Allocates 1 Solid Hour of Gameplay</li>
+                <li>• Enterprise Dedicated RTX GPU Instance</li>
+                <li>• Latency Cap Locked Under 15ms</li>
+                <li>• Standard Cloud Save Allocation Block</li>
+            </ul>
+            <button class="buy-btn" onclick="addFunds(100)">Deposit Credits</button>
+        </div>
+        <div class="tier-card featured">
+            <span class="badge">Most Popular</span>
+            <h3>Gamer Wallet Bundle</h3>
+            <div class="price">₹500 <span>/ Dedicated Credits</span></div>
+            <ul class="features-list">
+                <li>• Allocates 5 Full Hours of Deployment</li>
+                <li>• Persistent Core NVMe Engine Speeds</li>
+                <li>• Higher Priority Pipeline Queues</li>
+                <li>• Uncapped Stream Bandwidth Scaling</li>
+            </ul>
+            <button class="buy-btn" onclick="addFunds(500)">Deposit Credits</button>
+        </div>
+    </div>
+
+    <script>
+        async function addFunds(amt) {
+            try {
+                const res = await fetch('/api/add-funds', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount: amt })
+                });
+                const data = await res.json();
+                alert(`Transaction approved via integrated localized gateway!\nNew Platform Balance: ₹${data.newBalance}`);
+            } catch(e) { alert(`[DEMO MODE] Sandbox payment gateway completed deposit for ₹${amt}.`); }
+        }
+    </script>
+</body>
+</html>

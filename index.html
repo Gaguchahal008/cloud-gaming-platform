@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudRigs | High-Performance Cloud Gaming</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background-color: #0a0a0a; color: #ffffff; }
+        
+        header { background-color: #121212; border-bottom: 1px solid #222; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 24px; font-weight: bold; cursor: pointer; text-decoration: none; color: #fff; }
+        .logo span { color: #76b900; }
+        
+        nav ul { display: flex; list-style: none; gap: 25px; }
+        nav ul li a { color: #aaa; text-decoration: none; font-weight: 500; transition: 0.3s; }
+        nav ul li a:hover, nav ul li.active a { color: #76b900; }
+        
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+        .wallet-link { color: #76b900; text-decoration: none; font-weight: bold; font-size: 14px; background: rgba(118,185,0,0.1); padding: 8px 12px; border-radius: 4px; border: 1px solid rgba(118,185,0,0.3); }
+        .steam-sync-btn { background-color: #1b2838; color: #fff; border: 1px solid #66c0f4; padding: 10px 18px; border-radius: 4px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+        .hero { padding: 80px 5%; background: linear-gradient(rgba(10,10,10,0.8), #0a0a0a), url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1600&q=80') center/cover; min-height: 450px; display: flex; flex-direction: column; justify-content: center; }
+        .hero h1 { font-size: 48px; margin-bottom: 12px; font-weight: 800; }
+        .hero p { color: #aaa; max-width: 600px; margin-bottom: 25px; line-height: 1.6; }
+        .btn-primary { background-color: #76b900; color: #000; border: none; padding: 14px 35px; font-size: 16px; font-weight: bold; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; transition: 0.3s; }
+        .btn-primary:hover { transform: scale(1.03); box-shadow: 0 0 15px rgba(118,185,0,0.4); }
+
+        .games-section { padding: 50px 5%; }
+        .games-section h2 { margin-bottom: 25px; border-left: 4px solid #76b900; padding-left: 12px; font-size: 24px; }
+        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 30px; }
+        
+        .game-card { background-color: #121212; border: 1px solid #222; border-radius: 8px; overflow: hidden; transition: 0.3s; text-decoration: none; color: #fff; display: block; }
+        .game-card:hover { transform: translateY(-8px); border-color: #76b900; box-shadow: 0 10px 20px rgba(0,0,0,0.6); }
+        .poster-wrapper { position: relative; width: 100%; height: 300px; background-color: #222; }
+        .game-poster { width: 100%; height: 100%; object-fit: cover; }
+        .rate-tag { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.8); border: 1px solid #76b900; color: #76b900; padding: 4px 8px; font-size: 12px; font-weight: bold; border-radius: 3px; }
+        .game-details { padding: 15px; }
+        .game-title { font-weight: bold; font-size: 16px; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .game-platform { font-size: 12px; color: #66c0f4; background: rgba(102,192,244,0.1); padding: 2px 6px; border-radius: 3px; display: inline-block; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="/" class="logo">CLOUD<span>RIGS</span></a>
+        <nav>
+            <ul>
+                <li class="active"><a href="/">Dashboard</a></li>
+                <li><a href="/pages/pricing.html">Pricing</a></li>
+                <li><a href="/pages/login.html">Account</a></li>
+            </ul>
+        </nav>
+        <div class="nav-right">
+            <a href="/pages/pricing.html" class="wallet-link" id="wallet-nav">Wallet: ₹250</a>
+            <button class="steam-sync-btn" onclick="redirectToSteamSync()">
+                <img src="https://store.akamai.steamstatic.com/public/shared/images/header/logo_steam.svg" width="18" style="vertical-align: middle;" alt="">
+                <span id="sync-status-text">Sync Steam Account</span>
+            </button>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1>Grand Theft Auto V</h1>
+        <p>Stream live on ultra-tier remote setups at locked 60FPS latency paths. Verify deployment configuration specs directly via the core node gateway.</p>
+        <div>
+            <a href="/pages/game.html?id=gta5" class="btn-primary">Configure Stream</a>
+        </div>
+    </section>
+
+    <section class="games-section">
+        <h2>Your Cloud Library</h2>
+        <div class="games-grid">
+            <a href="/pages/game.html?id=gta5" class="game-card">
+                <div class="poster-wrapper">
+                    <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=400&q=80" class="game-poster" alt="GTA V">
+                    <span class="rate-tag">₹100/hr</span>
+                </div>
+                <div class="game-details">
+                    <div class="game-title">Grand Theft Auto V</div>
+                    <span class="game-platform">Steam Linked</span>
+                </div>
+            </a>
+            <a href="/pages/game.html?id=cyberpunk" class="game-card">
+                <div class="poster-wrapper">
+                    <img src="https://images.unsplash.com/photo-1551103782-8ab07afd45c1?auto=format&fit=crop&w=400&q=80" class="game-poster" alt="Cyberpunk 2077">
+                    <span class="rate-tag">₹100/hr</span>
+                </div>
+                <div class="game-details">
+                    <div class="game-title">Cyberpunk 2077</div>
+                    <span class="game-platform">Steam Linked</span>
+                </div>
+            </a>
+            <a href="/pages/game.html?id=cs2" class="game-card">
+                <div class="poster-wrapper">
+                    <img src="https://images.unsplash.com/photo-1560253023-3ec5d502959f?auto=format&fit=crop&w=400&q=80" class="game-poster" alt="CS2">
+                    <span class="rate-tag">₹100/hr</span>
+                </div>
+                <div class="game-details">
+                    <div class="game-title">Counter-Strike 2</div>
+                    <span class="game-platform">Steam Linked</span>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <script>
+        async function fetchSystemState() {
+            try {
+                const res = await fetch('/api/user-status');
+                const data = await res.json();
+                document.getElementById('wallet-nav').innerText = `Wallet: ₹${data.walletBalance}`;
+                if (data.isSteamSynced) {
+                    document.getElementById('sync-status-text').innerText = "✅ Account Linked";
+                }
+            } catch (e) { console.log("Offline Fallback Mode active."); }
+        }
+
+        function redirectToSteamSync() {
+            // Simulated official external OpenID handshake link redirection
+            window.location.href = "https://steamcommunity.com/openid/login";
+        }
+
+        window.onload = fetchSystemState;
+    </script>
+</body>
+</html>

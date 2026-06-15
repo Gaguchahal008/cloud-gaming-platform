@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudRigs Gateway Access</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background-color: #0a0a0a; color: #ffffff; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .login-card { background: #121212; border: 1px solid #222; border-radius: 8px; width: 100%; max-width: 400px; padding: 40px; }
+        .logo { font-size: 28px; font-weight: bold; text-align: center; margin-bottom: 30px; }
+        .logo span { color: #76b900; }
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 12px; color: #aaa; text-transform: uppercase; margin-bottom: 8px; font-weight: bold; }
+        .input-group input { width: 100%; background: #1a1a1a; border: 1px solid #333; padding: 12px; border-radius: 4px; color: #fff; outline: none; }
+        .input-group input:focus { border-color: #76b900; }
+        .submit-btn { background: #76b900; color: #000; border: none; width: 100%; padding: 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        .back-home { display: block; text-align: center; margin-top: 20px; font-size: 14px; color: #aaa; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="logo">CLOUD<span>RIGS</span></div>
+        <form onsubmit="event.preventDefault(); alert('Identity authenticated. Allocation token active.'); window.location.href='/';">
+            <div class="input-group">
+                <label>Access Gamertag ID</label>
+                <input type="text" placeholder="Enter custom gamertag..." required value="Young Goat">
+            </div>
+            <div class="input-group">
+                <label>Security Keyphrase</label>
+                <input type="password" placeholder="••••••••" required value="********">
+            </div>
+            <button class="submit-btn" type="submit">Verify Matrix Node Identity</button>
+        </form>
+        <a href="/" class="back-home">Cancel and Return</a>
+    </div>
+
+</body>
+</html>
