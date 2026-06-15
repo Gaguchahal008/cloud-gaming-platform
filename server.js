@@ -3,10 +3,9 @@ const path = require('path');
 const fs = require('fs');
 const app = express();
 
-// Uses environment port on Render, or 3000 locally
 const PORT = process.env.PORT || 3000; 
 
-// 🔥 CONFIGURATION: Your direct active mobile UPI handle
+// 🔥 CONFIGURATION: Your updated live payment details
 const CONFIG_MERCHANT_UPI_ID = "8872791624@fam"; 
 const CONFIG_MERCHANT_NAME = "CloudRigs Arcade";
 
@@ -15,7 +14,6 @@ app.use(express.json());
 
 const DB_FILE = path.join(__dirname, 'database.json');
 
-// Safely reads state configurations from disk storage
 function readDatabase() {
     try {
         if (!fs.existsSync(DB_FILE)) {
@@ -40,19 +38,15 @@ function readDatabase() {
     }
 }
 
-// Commits runtime updates securely back to disk
 function saveDatabase(data) {
     try {
         fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
     } catch (err) {
-        console.error("Critical database file commit error:", err);
+        console.error("Critical database save failure:", err);
     }
 }
 
-// ==========================================
-//           SERVER API ENDPOINTS
-// ==========================================
-
+// API ENDPOINTS
 app.get('/api/user-status', (req, res) => {
     res.json(readDatabase());
 });
@@ -61,7 +55,6 @@ app.get('/api/payment-config', (req, res) => {
     res.json({ vpa: CONFIG_MERCHANT_UPI_ID, payeeName: CONFIG_MERCHANT_NAME });
 });
 
-// Validates the 12-Digit UTR structure and acts as anti-cheat lock
 app.post('/api/verify-utr', (req, res) => {
     const { utr, amount } = req.body;
     let session = readDatabase();
@@ -70,14 +63,14 @@ app.post('/api/verify-utr', (req, res) => {
     if (!utr || !utrRegex.test(utr)) {
         return res.status(400).json({ 
             success: false, 
-            message: "Invalid UTR Format! A valid UPI Ref No. must be exactly 12 numeric digits." 
+            message: "Format Error! UTR must be exactly 12 numeric digits." 
         });
     }
 
     if (session.usedUTRs.includes(utr)) {
         return res.status(400).json({ 
             success: false, 
-            message: "Transaction Rejected! This unique UTR has already been claimed." 
+            message: "Security Lock! This UTR was already claimed." 
         });
     }
 
@@ -95,7 +88,7 @@ app.post('/api/buy-pass', (req, res) => {
     if (session.walletBalance < cost) {
         return res.status(400).json({ 
             success: false, 
-            message: `Insufficient Cash! You need ₹${cost} to complete this conversion pass.` 
+            message: `Insufficient Funds! You require ₹${cost} in your wallet.` 
         });
     }
 
@@ -107,13 +100,10 @@ app.post('/api/buy-pass', (req, res) => {
 });
 
 app.post('/api/launch-game', (req, res) => {
-    const { gameName } = req.body;
     let session = readDatabase();
-
     if (session.playtimeMinutes < 60) {
-        return res.status(400).json({ success: false, message: "Insufficient Playtime! Re-up your pass minutes." });
+        return res.status(400).json({ success: false, message: "Playtime depleted! Purchase a pass." });
     }
-
     session.playtimeMinutes -= 60; 
     session.activeSession = true;
     saveDatabase(session);
@@ -127,21 +117,9 @@ app.post('/api/terminate-session', (req, res) => {
     res.json({ success: true });
 });
 
-app.post('/api/update-profile', (req, res) => {
-    const { gamertag } = req.body;
-    if (gamertag && gamertag.trim() !== "") {
-        let session = readDatabase();
-        session.gamertag = gamertag.trim();
-        saveDatabase(session);
-        return res.json({ success: true, gamertag: session.gamertag });
-    }
-    res.status(400).json({ success: false });
-});
-
-// SUB-FOLDER ROUTING RE-DIRECTIONS
 app.get('/pages/game.html', (req, res) => res.sendFile(path.join(__dirname, 'pages', 'game.html')));
 app.get('/pages/login.html', (req, res) => res.sendFile(path.join(__dirname, 'pages', 'login.html')));
 app.get('/pages/pricing.html', (req, res) => res.sendFile(path.join(__dirname, 'pages', 'pricing.html')));
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 
-app.listen(PORT, () => console.log(`🚀 Playtime Engine Active on Port: ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Cyber Server Processing on Port: ${PORT}`));

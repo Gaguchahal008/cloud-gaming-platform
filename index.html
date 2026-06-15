@@ -3,108 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CloudRigs Premium Nexus</title>
+    <title>CLOUD//NEXUS Core</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-        body { background-color: #050505; color: #ffffff; padding-bottom: 90px; overflow-x: hidden; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, sans-serif; }
+        body { background-color: #02040a; color: #f0f5ff; padding-bottom: 100px; overflow-x: hidden; }
         
-        header { background: rgba(10, 10, 10, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid #1a1a1a; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .logo { font-size: 24px; font-weight: 900; text-decoration: none; color: #fff; letter-spacing: 1px; }
-        .logo span { color: #76b900; text-shadow: 0 0 10px rgba(118,185,0,0.4); }
-        .status-indicators-bar { display: flex; gap: 12px; }
-        .metric-pill { color: #fff; background: #111; padding: 10px 16px; border-radius: 8px; border: 1px solid #222; font-size: 13px; font-weight: bold; }
-        .metric-pill.highlight { color: #76b900; border-color: #76b900; }
-        
-        .hero { padding: 100px 5%; background: linear-gradient(rgba(5,5,5,0.2), #050505), url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1600&q=80') center/cover; min-height: 440px; display: flex; flex-direction: column; justify-content: center; }
-        .hero-logo { max-width: 260px; height: auto; margin-bottom: 20px; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.8)); }
-        .hero p { color: #ccc; max-width: 550px; margin-bottom: 30px; line-height: 1.6; font-size: 15px; }
-        .btn-primary { background: #76b900; color: #000; border: none; padding: 16px 40px; font-size: 16px; font-weight: 900; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; box-shadow: 0 4px 20px rgba(118,185,0,0.4); }
+        /* BACKGROUND PARTICLE CANVAS CONTAINER */
+        #particle-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none; opacity: 0.35; }
 
-        .games-section { padding: 40px 5%; }
-        .games-section h2 { margin-bottom: 30px; font-size: 24px; font-weight: 800; text-transform: uppercase; border-left: 4px solid #76b900; padding-left: 15px; }
-        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 30px; }
+        header { background: rgba(2, 4, 10, 0.75); backdrop-filter: blur(20px); border-bottom: 1px solid #0055ff33; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 22px; font-weight: 900; text-decoration: none; color: #fff; letter-spacing: 2px; }
+        .logo span { color: #0077ff; text-shadow: 0 0 15px #0077ff; }
         
-        .game-card { background-color: #111; border: 1px solid #1c1c1c; border-radius: 16px; overflow: hidden; cursor: pointer; transition: transform 0.3s, border-color 0.3s; position: relative; }
-        .game-card:hover { transform: translateY(-8px); border-color: #76b900; }
-        
-        .poster-wrapper { position: relative; width: 100%; height: 320px; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .bg-gta5 { background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.75)), url('https://images2.alphacoders.com/474/474439.jpg'); }
-        .bg-cyberpunk { background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.75)), url('https://images4.alphacoders.com/114/1147721.jpg'); }
-        .bg-cs2 { background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.75)), url('https://images.alphacoders.com/132/1328404.jpeg'); }
-        
-        .game-card-logo { width: 85%; max-height: 100px; object-fit: contain; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.9)); }
-        .rate-tag { position: absolute; top: 15px; right: 15px; background: rgba(5,5,5,0.85); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 6px 12px; font-size: 11px; font-weight: 800; border-radius: 6px; }
-        .game-details { padding: 20px; background: #0f0f0f; border-top: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; }
-        .platform-badge { font-size: 10px; font-weight: 900; color: #66c0f4; background: rgba(102,192,244,0.1); padding: 4px 8px; border-radius: 4px; }
+        .status-indicators-bar { display: flex; gap: 12px; align-items: center; }
+        .ping-container { font-size: 11px; color: #00ff66; display: flex; align-items: center; gap: 6px; font-weight: bold; background: rgba(0,255,102,0.05); padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(0,255,102,0.15); }
+        .ping-dot { width: 6px; height: 6px; background: #00ff66; border-radius: 50%; box-shadow: 0 0 10px #00ff66; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
 
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; padding: 20px; z-index: 1000; backdrop-filter: blur(8px); }
-        .modal-box { background: #0f0f0f; border: 2px solid #ff3333; border-radius: 20px; max-width: 420px; padding: 35px 25px; text-align: center; }
-        .btn-deposit { background: #76b900; color: #000; padding: 14px; border-radius: 8px; font-weight: bold; text-decoration: none; display: block; margin-bottom: 12px; text-transform: uppercase; }
-        .btn-close { background: #1c1c1c; color: #aaa; border: 1px solid #333; padding: 12px; width: 100%; border-radius: 8px; cursor: pointer; }
+        .metric-pill { color: #fff; background: #060b19; padding: 10px 16px; border-radius: 8px; border: 1px solid #0055ff33; font-size: 13px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+        .metric-pill.highlight { color: #00ddff; border-color: #00ddff; text-shadow: 0 0 10px rgba(0,221,255,0.4); }
+        
+        /* DYNAMIC HERO INTERFACE */
+        .hero { position: relative; z-index: 5; padding: 90px 5%; background: linear-gradient(rgba(2,4,10,0.3), #02040a), url('https://images.unsplash.com/photo-1614064641938-3bbee52942c7?auto=format&fit=crop&w=1600&q=80') center/cover; min-height: 400px; display: flex; flex-direction: column; justify-content: center; border-bottom: 1px solid #002266; }
+        .hero h1 { font-size: 42px; font-weight: 900; letter-spacing: -1px; margin-bottom: 10px; text-transform: uppercase; text-shadow: 0 4px 20px rgba(0,0,0,0.8); }
+        .hero h1 span { color: #0077ff; }
+        .hero p { color: #8fa0c6; max-width: 500px; margin-bottom: 25px; font-size: 14px; line-height: 1.6; }
+        
+        .btn-primary { background: linear-gradient(135deg, #0055ff, #00b3ff); color: #fff; border: none; padding: 16px 36px; font-size: 14px; font-weight: 900; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; box-shadow: 0 0 25px rgba(0,85,255,0.4); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 35px #00b3ff; }
 
-        .mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(20px); border-top: 1px solid #1a1a1a; height: 72px; grid-template-columns: repeat(3, 1fr); align-items: center; text-align: center; }
-        .mobile-nav-item { color: #666; text-decoration: none; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 5px; font-weight: 700; }
-        .mobile-nav-item.active { color: #76b900; }
+        .games-section { position: relative; z-index: 5; padding: 40px 5%; }
+        .games-section h2 { margin-bottom: 25px; font-size: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; border-left: 4px solid #0077ff; padding-left: 12px; }
+        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; }
+        
+        /* PREMIUM GAMING CARDS */
+        .game-card { background-color: #040914; border: 1px solid #0033aa44; border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .game-card:hover { transform: translateY(-6px) scale(1.02); border-color: #00ddff; box-shadow: 0 0 25px rgba(0,221,255,0.25); }
+        
+        .poster-wrapper { position: relative; width: 100%; height: 260px; background-size: cover; background-position: center; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .bg-gta5 { background-image: linear-gradient(rgba(2,4,10,0.1), rgba(2,4,10,0.85)), url('https://images2.alphacoders.com/474/474439.jpg'); }
+        .bg-cyberpunk { background-image: linear-gradient(rgba(2,4,10,0.1), rgba(2,4,10,0.85)), url('https://images4.alphacoders.com/114/1147721.jpg'); }
+        .bg-cs2 { background-image: linear-gradient(rgba(2,4,10,0.1), rgba(2,4,10,0.85)), url('https://images.alphacoders.com/132/1328404.jpeg'); }
+        
+        /* CUSTOM CRISP HIGH-TECH NEON LOGO EMBED MATRIX */
+        .cyber-logo-frame { padding: 15px 25px; background: rgba(2, 4, 10, 0.85); border: 2px solid #0077ff; border-radius: 8px; font-weight: 900; font-size: 22px; letter-spacing: 1px; text-transform: uppercase; text-align: center; box-shadow: 0 0 20px rgba(0,118,255,0.4); text-shadow: 0 0 10px #0077ff; transform: rotate(-2deg); }
+        .frame-cyberpunk { border-color: #fcee0a; color: #fcee0a; text-shadow: 0 0 10px #fcee0a; box-shadow: 0 0 20px rgba(252,238,10,0.3); transform: rotate(1deg); font-style: italic; }
+        .frame-cs2 { border-color: #ff9900; color: #ff9900; text-shadow: 0 0 10px #ff9900; box-shadow: 0 0 20px rgba(255,153,0,0.3); transform: scale(1.05); }
+
+        .rate-tag { position: absolute; top: 15px; right: 15px; background: rgba(2,4,10,0.9); border: 1px solid #0055ff66; color: #00ddff; padding: 6px 12px; font-size: 10px; font-weight: 800; border-radius: 6px; letter-spacing: 0.5px; backdrop-filter: blur(4px); }
+        .game-details { padding: 18px; background: #03060f; border-top: 1px solid #0033aa33; display: flex; justify-content: space-between; align-items: center; }
+        .platform-badge { font-size: 10px; font-weight: 900; color: #00ddff; background: rgba(0,221,255,0.08); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(0,221,255,0.2); }
+
+        /* SAFETY WARNING MODAL OVERLAY */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(1,2,5,0.95); justify-content: center; align-items: center; padding: 20px; z-index: 5000; backdrop-filter: blur(10px); }
+        .modal-box { background: #040914; border: 2px solid #ff3355; border-radius: 20px; max-width: 400px; padding: 35px 25px; text-align: center; box-shadow: 0 0 40px rgba(255,51,85,0.3); }
+        .btn-deposit { background: linear-gradient(135deg, #0055ff, #00b3ff); color: #fff; padding: 14px; border-radius: 8px; font-weight: bold; text-decoration: none; display: block; margin-bottom: 12px; text-transform: uppercase; font-size: 13px; letter-spacing: 0.5px; text-align: center; }
+        .btn-close { background: #0b1220; color: #8fa0c6; border: 1px solid #0033aa44; padding: 12px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; }
+
+        /* MOBILE APPLICATION BAR FOOTER */
+        .mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(3, 6, 15, 0.9); backdrop-filter: blur(25px); border-top: 1px solid #0055ff33; height: 74px; grid-template-columns: repeat(3, 1fr); align-items: center; text-align: center; z-index: 999; box-shadow: 0 -10px 30px rgba(0,0,0,0.6); }
+        .mobile-nav-item { color: #506385; text-decoration: none; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-weight: 700; }
+        .mobile-nav-item.active { color: #00ddff; text-shadow: 0 0 10px rgba(0,221,255,0.3); }
+        .mobile-nav-icon { font-size: 20px; }
 
         @media (max-width: 768px) {
             header { display: none; }
             .mobile-nav { display: grid; }
-            .hero { padding: 60px 6% 40px 6%; min-height: 340px; text-align: center; align-items: center; }
-            .hero-logo { max-width: 180px; }
-            .hero p { font-size: 13px; }
+            .hero { padding: 60px 6% 35px 6%; min-height: 300px; text-align: center; align-items: center; }
+            .hero h1 { font-size: 30px; }
+            .hero p { font-size: 12px; }
             .btn-primary { width: 100%; padding: 14px; }
             .games-section { padding: 25px 4%; }
             .games-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
-            .poster-wrapper { height: 200px; padding: 10px; }
+            .poster-wrapper { height: 180px; padding: 10px; }
+            .cyber-logo-frame { font-size: 14px; padding: 10px 15px; }
             .game-details { padding: 12px; }
-            .game-details b { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px; }
+            .game-details b { font-size: 13px; }
         }
     </style>
 </head>
 <body>
 
+    <canvas id="particle-canvas"></canvas>
+
     <header>
-        <a href="/" class="logo">CLOUD<span>RIGS</span></a>
+        <a href="/" class="logo">CLOUD//<span>NEXUS</span></a>
         <div class="status-indicators-bar">
+            <div class="ping-container"><div class="ping-dot"></div>CORE RIGS ONLINE</div>
             <div class="metric-pill" id="header-cash">Wallet: ₹0</div>
             <div class="metric-pill highlight" id="header-time">0 Mins</div>
         </div>
     </header>
 
     <section class="hero">
-        <img src="https://www.pngmart.com/files/10/Grand-Theft-Auto-V-Logo-PNG-Transparent-Image.png" class="hero-logo" alt="GTA V Logo">
-        <p>Instantly deploy full-tier hardware containers directly to your smartphone. Low-latency edge performance parameters enabled.</p>
+        <h1>DEPLOY <span>NODE//01</span></h1>
+        <p>Stream massive frame rates directly to any standard viewport interface. Optimized core latencies configured automatically.</p>
         <div style="width: 100%; max-width: 320px;">
-            <button class="btn-primary" onclick="checkTimeBeforeLaunch('gta5')">Launch Game Server</button>
+            <button class="btn-primary" onclick="checkTimeBeforeLaunch('gta5')">Initialize Rig Stream</button>
         </div>
     </section>
 
     <section class="games-section">
-        <h2>Available Rig Libraries</h2>
+        <h2>Cluster Matrices</h2>
         <div class="games-grid">
             
             <div class="game-card" onclick="checkTimeBeforeLaunch('gta5')">
                 <div class="poster-wrapper bg-gta5">
-                    <span class="rate-tag">60 Mins Pass</span>
-                    <img src="https://www.pngmart.com/files/10/Grand-Theft-Auto-V-Logo-PNG-Transparent-Image.png" class="game-card-logo" alt="GTA V">
+                    <span class="rate-tag">₹40 / HR</span>
+                    <div class="cyber-logo-frame">GTA V</div>
                 </div>
-                <div class="game-details"><b>GTA V</b><span class="platform-badge">Steam</span></div>
+                <div class="game-details"><b>GRAND THEFT AUTO</b><span class="platform-badge">STEAM</span></div>
             </div>
 
             <div class="game-card" onclick="checkTimeBeforeLaunch('cyberpunk')">
                 <div class="poster-wrapper bg-cyberpunk">
-                    <span class="rate-tag">60 Mins Pass</span>
-                    <img src="https://www.pngmart.com/files/22/Cyberpunk-2077-Logo-PNG-Transparent.png" class="game-card-logo" alt="Cyberpunk">
+                    <span class="rate-tag">₹40 / HR</span>
+                    <div class="cyber-logo-frame frame-cyberpunk">CYBERPUNK</div>
                 </div>
-                <div class="game-details"><b>Cyberpunk</b><span class="platform-badge">Epic</span></div>
+                <div class="game-details"><b>CYBERPUNK 2077</b><span class="platform-badge">EPIC</span></div>
             </div>
 
             <div class="game-card" onclick="checkTimeBeforeLaunch('cs2')">
                 <div class="poster-wrapper bg-cs2">
-                    <span class="rate-tag">60 Mins Pass</span>
-                    <img src="https://www.pngmart.com/files/23/Counter-Strike-2-Logo-PNG-Isolated-Photo.png" class="game-card-logo" alt="CS2">
+                    <span class="rate-tag">₹40 / HR</span>
+                    <div class="cyber-logo-frame frame-cs2">CS // 2</div>
                 </div>
-                <div class="game-details"><b>CS 2</b><span class="platform-badge">Steam</span></div>
+                <div class="game-details"><b>COUNTER STRIKE</b><span class="platform-badge">STEAM</span></div>
             </div>
 
         </div>
@@ -112,20 +136,20 @@
 
     <div class="modal-overlay" id="time-modal">
         <div class="modal-box">
-            <h3 style="margin-bottom:12px; color:#ff3333; font-size: 22px; font-weight: 800;">PLAYTIME EXPIRED</h3>
-            <p style="color:#aaa; margin-bottom:25px; font-size:14px;">You need a minimum of 60 unexpired playtime minutes loaded up into your session cluster to request server nodes.</p>
-            <a href="/pages/pricing.html" class="btn-deposit">Acquire Time Pass</a>
+            <h3 style="margin-bottom:12px; color:#ff3355; font-size: 20px; font-weight: 800;">PLAYTIME EXPIRED</h3>
+            <p style="color:#8fa0c6; margin-bottom:25px; font-size:14px; line-height: 1.5;">Your terminal cluster lacks sufficient allocated playtime minutes to run game nodes.</p>
+            <a href="/pages/pricing.html" class="btn-deposit">Acquire Session Pass</a>
             <button class="btn-close" onclick="document.getElementById('time-modal').style.display='none'">Dismiss Panel</button>
         </div>
     </div>
 
     <div class="mobile-nav">
-        <a href="/" class="mobile-nav-item active"><span style="font-size:22px;">🎮</span><div>Launcher</div></a>
+        <a href="/" class="mobile-nav-item active"><span class="mobile-nav-icon">🎯</span><div>Core Launcher</div></a>
         <a href="/pages/pricing.html" class="mobile-nav-item">
-            <span id="mobile-wallet-hud">🪙 Wallet: ₹0</span>
-            <span id="mobile-time-hud" style="color:#76b900; font-weight:900;">0 Mins</span>
+            <span id="mobile-wallet-hud" style="color: #8fa0c6;">🪙 Wallet: ₹0</span>
+            <span id="mobile-time-hud" style="color:#00ddff; font-weight:900;">0 Mins</span>
         </a>
-        <a href="/pages/login.html" class="mobile-nav-item"><span style="font-size:22px;">👤</span><div id="user-profile-label">Profile</div></a>
+        <a href="/pages/login.html" class="mobile-nav-item"><span class="mobile-nav-icon">💎</span><div id="user-profile-label">Young Goat</div></a>
     </div>
 
     <script>
@@ -153,6 +177,55 @@
                 window.location.href = `/pages/game.html?id=${id}`;
             }
         }
+
+        // CINEMATIC PARTICLE BACKGROUND GENERATOR ENGINE
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = Math.random() * 0.4 - 0.2;
+                this.speedY = Math.random() * 0.4 - 0.2;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                if (this.y < 0) this.y = canvas.height;
+            }
+            draw() {
+                ctx.fillStyle = '#0055ff';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 65; i++) { particles.push(new Particle()); }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
         window.onload = fetchState;
     </script>
 </body>

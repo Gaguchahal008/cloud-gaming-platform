@@ -3,92 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure UPI Billing Portal</title>
+    <title>Cyber Banking Framework</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-        body { background-color: #0d0d0d; color: #ffffff; padding: 25px 5% 100px 5%; }
-        .back-link { color: #76b900; text-decoration: none; font-weight: bold; display: inline-block; margin-bottom: 20px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: '-apple-system', sans-serif; }
+        body { background-color: #02040a; color: #ffffff; padding: 25px 5% 100px 5%; }
+        .back-link { color: #00ddff; text-decoration: none; font-weight: bold; display: inline-block; margin-bottom: 25px; font-size: 14px; }
         
-        .wallet-hub-panel { background: #161616; border: 1px solid #222; border-radius: 12px; padding: 20px; margin-bottom: 35px; }
-        .balance-label { font-size: 13px; color: #aaa; text-transform: uppercase; }
-        .balance-value { font-size: 36px; font-weight: 800; color: #76b900; margin: 5px 0; }
+        .wallet-hub-panel { background: #040914; border: 1px solid #0055ff33; border-radius: 16px; padding: 24px; margin-bottom: 35px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
+        .balance-label { font-size: 12px; color: #8fa0c6; text-transform: uppercase; letter-spacing: 0.5px; }
+        .balance-value { font-size: 40px; font-weight: 900; color: #00ddff; margin: 5px 0; text-shadow: 0 0 15px rgba(0,221,255,0.2); }
         
-        .deposit-header { font-size: 15px; font-weight: bold; margin-bottom: 12px; color: #aaa; }
-        .quick-deposit-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .btn-add-cash { background: #222; border: 1px solid #333; color: #fff; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; text-align: center; }
-        .btn-add-cash span { display: block; font-size: 10px; color: #76b900; font-weight: normal; margin-top: 2px;}
+        .deposit-header { font-size: 14px; font-weight: bold; margin-bottom: 15px; color: #8fa0c6; text-transform: uppercase; }
+        .quick-deposit-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 10px; }
+        .btn-add-cash { background: #060e1e; border: 1px solid #0055ff44; color: #fff; padding: 16px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 15px; transition: 0.2s; }
+        .btn-add-cash:hover { border-color: #00ddff; background: #0a1730; }
+        .btn-add-cash span { display: block; font-size: 9px; color: #00ddff; font-weight: normal; margin-top: 4px; text-transform: uppercase; }
 
-        h2 { font-size: 20px; margin-bottom: 15px; border-left: 4px solid #76b900; padding-left: 10px; }
+        h2 { font-size: 18px; margin-bottom: 20px; border-left: 4px solid #0077ff; padding-left: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
         .billing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
-        .tier-card { background: #161616; border: 1px solid #222; border-radius: 12px; padding: 20px; text-align: center; }
-        .tier-card.featured { border-color: #76b900; background: linear-gradient(145deg, #161616, #131f0d); }
-        .price { font-size: 28px; font-weight: 800; margin: 12px 0; color: #76b900; }
-        .buy-btn { background: #222; border: 1px solid #444; color: #fff; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .tier-card.featured .buy-btn { background: #76b900; color: #000; border: none; }
+        .tier-card { background: #040914; border: 1px solid #0033aa44; border-radius: 16px; padding: 25px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
+        .tier-card.featured { border-color: #0077ff; background: linear-gradient(145deg, #040914, #051430); box-shadow: 0 0 25px rgba(0,85,255,0.15); }
+        .price { font-size: 32px; font-weight: 900; margin: 15px 0; color: #00ddff; }
+        .buy-btn { background: #060e1e; border: 1px solid #0055ff33; color: #fff; width: 100%; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; text-transform: uppercase; }
+        .buy-btn:hover { border-color: #00ddff; }
+        .tier-card.featured .buy-btn { background: linear-gradient(135deg, #0055ff, #00b3ff); color: #fff; border: none; }
 
-        .upi-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 5000; justify-content: center; align-items: center; padding: 20px; }
-        .upi-modal-box { background: #161616; border: 1px solid #333; border-radius: 16px; width: 100%; max-width: 380px; padding: 25px; text-align: center; }
-        .btn-launch-intent { background: #76b900; color: #000; font-weight: bold; padding: 14px; border-radius: 8px; text-decoration: none; display: block; margin-bottom: 20px; font-size: 15px; text-align: center; }
+        /* UPI OVERLAY SHEET */
+        .upi-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(1,2,5,0.96); z-index: 5000; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(10px); }
+        .upi-modal-box { background: #040914; border: 1px solid #0055ff44; border-radius: 20px; width: 100%; max-width: 380px; padding: 30px 25px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.7); }
+        .btn-launch-intent { background: linear-gradient(135deg, #0055ff, #00b3ff); color: #fff; font-weight: bold; padding: 15px; border-radius: 8px; text-decoration: none; display: block; margin-bottom: 20px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        .utr-input-box { background: #222; border: 1px solid #444; color: #fff; width: 100%; padding: 14px; border-radius: 8px; font-size: 16px; text-align: center; margin-bottom: 12px; font-weight: bold; letter-spacing: 2px; }
-        .utr-input-box:focus { border-color: #76b900; outline: none; }
-        .btn-verify-payment { background: #1b2838; color: #66c0f4; border: 1px solid #66c0f4; font-weight: bold; padding: 14px; border-radius: 8px; width: 100%; cursor: pointer; font-size: 15px; margin-bottom: 12px; }
-        .btn-cancel-payment { background: transparent; border: none; color: #888; font-size: 12px; cursor: pointer; text-decoration: underline; }
+        .utr-input-box { background: #02040a; border: 1px solid #0055ff44; color: #fff; width: 100%; padding: 15px; border-radius: 8px; font-size: 18px; text-align: center; margin-bottom: 15px; font-weight: bold; letter-spacing: 3px; }
+        .utr-input-box:focus { border-color: #00ddff; outline: none; box-shadow: 0 0 15px rgba(0,221,255,0.2); }
+        .btn-verify-payment { background: #0c1c38; color: #00ddff; border: 1px solid #00ddff44; font-weight: bold; padding: 14px; border-radius: 8px; width: 100%; cursor: pointer; font-size: 14px; text-transform: uppercase; margin-bottom: 15px; }
+        .btn-cancel-payment { background: transparent; border: none; color: #506385; font-size: 12px; cursor: pointer; text-decoration: underline; }
         @media (max-width: 768px) { .billing-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-    <a href="/" class="back-link">← Return to Home Dashboard</a>
+    <a href="/" class="back-link">← Terminal Nexus Gateway</a>
     
     <div class="wallet-hub-panel">
-        <div class="balance-label">Cloud Rigs Wallet Cash</div>
+        <div class="balance-label">Available Core Cash</div>
         <div class="balance-value" id="cash-display">₹0</div>
-        <div style="font-size:12px; color:#aaa; margin-bottom: 20px;" id="minutes-display">Active Time Bank: 0 Mins</div>
+        <div style="font-size:12px; color:#8fa0c6; margin-bottom: 25px;" id="minutes-display">Session Time Pool: 0 Mins</div>
         
-        <div class="deposit-header">Select Recharge Amount via BHIM UPI:</div>
+        <div class="deposit-header">Select Gateway Fuel Amount:</div>
         <div class="quick-deposit-row">
-            <button class="btn-add-cash" onclick="triggerDirectUPI(100)">₹100 <span>+ Safe Deposit</span></button>
-            <button class="btn-add-cash" onclick="triggerDirectUPI(500)">₹500 <span>+ Safe Deposit</span></button>
-            <button class="btn-add-cash" onclick="triggerDirectUPI(1000)">₹1000 <span>+ Safe Deposit</span></button>
+            <button class="btn-add-cash" onclick="triggerDirectUPI(100)">₹100 <span>+ LOAD MATRIX</span></button>
+            <button class="btn-add-cash" onclick="triggerDirectUPI(500)">₹500 <span>+ LOAD MATRIX</span></button>
+            <button class="btn-add-cash" onclick="triggerDirectUPI(1000)">₹1000 <span>+ LOAD MATRIX</span></button>
         </div>
     </div>
 
-    <h2>Convert Wallet Cash to Session Playtime Passes</h2>
+    <h2>Convert Cash to Secure Runtime Passes</h2>
     <div class="billing-grid">
         <div class="tier-card">
-            <div style="font-weight: bold;">60 Mins Pass</div>
+            <div style="font-weight: bold; font-size:15px;">60 Mins Cluster</div>
             <div class="price">₹40</div>
-            <button class="buy-btn" onclick="buyPass(40, 60)">Convert ₹40</button>
+            <button class="buy-btn" onclick="buyPass(40, 60)">Deduct ₹40</button>
         </div>
         <div class="tier-card featured">
-            <div style="font-weight: bold; color: #76b900;">5 Hours Pass</div>
+            <div style="font-weight: bold; color: #00ddff; font-size:15px;">5 Hours Cluster</div>
             <div class="price">₹200</div>
-            <button class="buy-btn" onclick="buyPass(200, 300)">Convert ₹200</button>
+            <button class="buy-btn" onclick="buyPass(200, 300)">Deduct ₹200</button>
         </div>
         <div class="tier-card">
-            <div style="font-weight: bold;">24 Hour Pass</div>
+            <div style="font-weight: bold; font-size:15px;">24 Hours Cluster</div>
             <div class="price">₹500</div>
-            <button class="buy-btn" onclick="buyPass(500, 1440)">Convert ₹500</button>
+            <button class="buy-btn" onclick="buyPass(500, 1440)">Deduct ₹500</button>
         </div>
     </div>
 
     <div class="upi-overlay" id="upi-sheet">
         <div class="upi-modal-box">
-            <div style="font-size: 32px; margin-bottom: 10px;">💳</div>
-            <div id="payment-headline" style="font-size: 18px; font-weight: bold; margin-bottom: 15px;">Deposit Amount</div>
+            <div style="font-size: 28px; margin-bottom: 12px; color:#0055ff;">💎</div>
+            <div id="payment-headline" style="font-size: 16px; font-weight: bold; margin-bottom: 20px; text-transform: uppercase;">Deposit Amount</div>
             
-            <a href="#" class="btn-launch-intent" id="upi-intent-link">👉 Open Payment Apps</a>
+            <a href="#" class="btn-launch-intent" id="upi-intent-link">👉 Trigger Mobile Pay Channel</a>
             
             <div id="utr-verification-section">
-                <p style="font-size: 13px; color: #aaa; margin-bottom: 12px; text-align: left; line-height: 1.4;">
-                    Once payment finishes, copy the <b>12-digit UPI Ref No. / UTR</b> from your app receipt history and paste it below:
+                <p style="font-size: 12px; color: #8fa0c6; margin-bottom: 14px; text-align: left; line-height: 1.5;">
+                    Input the generated 12-digit transaction bank **UTR Reference ID** below to release the container funds lock:
                 </p>
-                <input type="text" class="utr-input-box" id="user-utr-input" placeholder="12-Digit UTR No." maxlength="12">
-                <button class="btn-verify-payment" onclick="submitUTRClaim()">Verify & Claim Balance</button>
+                <input type="text" class="utr-input-box" id="user-utr-input" placeholder="000000000000" maxlength="12">
+                <button class="btn-verify-payment" onclick="submitUTRClaim()">Validate Node Fuel</button>
             </div>
 
-            <button class="btn-cancel-payment" onclick="closePaymentSheet()">Cancel Transaction</button>
+            <button class="btn-cancel-payment" onclick="closePaymentSheet()">Abort System Route</button>
         </div>
     </div>
 
@@ -100,21 +103,20 @@
                 const res = await fetch('/api/user-status');
                 const data = await res.json();
                 document.getElementById('cash-display').innerText = `₹${data.walletBalance}`;
-                document.getElementById('minutes-display').innerText = `Active Time Bank: ${data.playtimeMinutes} Mins`;
+                document.getElementById('minutes-display').innerText = `Session Time Pool: ${data.playtimeMinutes} Mins`;
             } catch(e) { console.log(e); }
         }
 
         async function triggerDirectUPI(amount) {
             pendingDepositAmount = amount;
-            document.getElementById('payment-headline').innerText = `Deposit ₹${amount}`;
+            document.getElementById('payment-headline').innerText = `Load Account: ₹${amount}`;
             document.getElementById('user-utr-input').value = ""; 
             
             try {
                 const configRes = await fetch('/api/payment-config');
                 const config = await configRes.json();
-                
                 const encodedPayeeName = encodeURIComponent(config.payeeName);
-                const upiLink = `upi://pay?pa=${config.vpa}&pn=${encodedPayeeName}&am=${amount}&cu=INR&tn=CloudRigs%20Wallet%20Topup`;
+                const upiLink = `upi://pay?pa=${config.vpa}&pn=${encodedPayeeName}&am=${amount}&cu=INR&tn=Nexus%20Hardware%20Fuel`;
                 
                 document.getElementById('upi-intent-link').href = upiLink;
                 document.getElementById('upi-sheet').style.display = 'flex';
@@ -122,14 +124,13 @@
                 if(/Android|iPhone|iPad/i.test(navigator.userAgent)) {
                     window.location.href = upiLink;
                 }
-            } catch(e) { alert("Could not fetch payment configurations."); }
+            } catch(e) { alert("Config download broken."); }
         }
 
         async function submitUTRClaim() {
             const utrValue = document.getElementById('user-utr-input').value.trim();
-            
             if (utrValue.length !== 12 || isNaN(utrValue)) {
-                alert("❌ Validation Error: UTR must be exactly 12 numeric digits!");
+                alert("Validation Exception: The UTR framework requires exactly 12 numerical digits.");
                 return;
             }
 
@@ -142,13 +143,13 @@
                 const data = await res.json();
                 
                 if (res.ok) {
-                    alert(`✅ Money Claimed Successfully!\n₹${pendingDepositAmount} has been added to your balance.`);
+                    alert(`✅ Node Fuel Loaded! ₹${pendingDepositAmount} compiled to balance.`);
                     closePaymentSheet();
                     fetchSystemState();
                 } else {
-                    alert(`❌ Verification Failed: ${data.message}`);
+                    alert(`❌ Authentication Failure: ${data.message}`);
                 }
-            } catch(e) { alert("Network validation error."); }
+            } catch(e) { alert("Transmission synchronization fault."); }
         }
 
         function closePaymentSheet() {
@@ -164,14 +165,13 @@
                     body: JSON.stringify({ cost: costAmount, minutes: minutesAmount })
                 });
                 const data = await res.json();
-                
                 if (res.ok) {
-                    alert(`Pass Activated! Received ${minutesAmount} Mins.`);
+                    alert(`Success: Allocated ${minutesAmount} Mins.`);
                     fetchSystemState();
                 } else {
-                    alert(`Declined: ${data.message}`);
+                    alert(`Denied: ${data.message}`);
                 }
-            } catch(e) { alert("Conversion error."); }
+            } catch(e) { alert("Matrix transaction exception."); }
         }
 
         window.onload = fetchSystemState;

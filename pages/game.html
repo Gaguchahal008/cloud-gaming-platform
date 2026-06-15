@@ -3,72 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stream Allocation Panel</title>
+    <title>Stream Allocation Container</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-        body { background-color: #050505; color: #ffffff; min-height: 100vh; padding: 30px 5%; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: '-apple-system', sans-serif; }
+        body { background-color: #02040a; color: #ffffff; min-height: 100vh; padding: 30px 5%; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; overflow: hidden; }
         
-        .blur-bg-backdrop { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-size: cover; background-position: center; filter: blur(50px) brightness(0.25); z-index: 1; pointer-events: none; }
-        .back-link { color: #76b900; text-decoration: none; font-weight: bold; font-size: 15px; position: absolute; top: 30px; left: 5%; z-index: 10; }
+        .blur-bg-backdrop { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-size: cover; background-position: center; filter: blur(60px) brightness(0.2); z-index: 1; pointer-events: none; }
+        .back-link { color: #00ddff; text-decoration: none; font-weight: bold; font-size: 14px; position: absolute; top: 30px; left: 5%; z-index: 10; letter-spacing: 0.5px; }
         
-        .stream-container { position: relative; z-index: 5; background: rgba(20, 20, 20, 0.6); border: 1px solid #222; backdrop-filter: blur(20px); border-radius: 24px; padding: 40px; width: 100%; max-width: 750px; text-align: center; }
-        .target-logo-img { max-width: 260px; height: 110px; object-fit: contain; margin: 0 auto 25px auto; display: block; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.8)); }
+        .stream-container { position: relative; z-index: 5; background: rgba(4, 9, 20, 0.7); border: 1px solid #0055ff33; backdrop-filter: blur(30px); border-radius: 24px; padding: 50px 40px; width: 100%; max-width: 650px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.7); }
         
-        .meta-strip { margin-bottom: 25px; display: flex; gap: 20px; font-size: 13px; color: #aaa; justify-content: center; }
-        .rate-highlight { color: #76b900; font-weight: bold; }
+        .cyber-logo-header-wrap { display: inline-block; padding: 18px 35px; background: #02040a; border: 3px solid #0077ff; font-weight: 900; font-size: 32px; letter-spacing: 2px; text-transform: uppercase; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 0 30px rgba(0,119,255,0.4); text-shadow: 0 0 15px #0077ff; }
         
-        .launch-panel { background: rgba(5,5,5,0.5); padding: 25px; border-radius: 12px; border: 1px solid #2a2a2a; margin-top: 20px; }
-        .launch-btn { background-color: #76b900; color: #000; border: none; padding: 16px; font-size: 16px; font-weight: 900; border-radius: 8px; cursor: pointer; width: 100%; text-transform: uppercase; }
+        .meta-strip { margin-bottom: 30px; display: flex; gap: 24px; font-size: 13px; color: #8fa0c6; justify-content: center; text-transform: uppercase; letter-spacing: 0.5px; }
+        .rate-highlight { color: #00ddff; font-weight: bold; text-shadow: 0 0 8px rgba(0,221,255,0.3); }
         
-        .stream-hud { display: none; background: #000; border: 2px dashed #76b900; padding: 30px 20px; border-radius: 12px; text-align: center; }
-        .timer-display { font-size: 40px; font-family: monospace; color: #76b900; font-weight: bold; margin: 15px 0; }
-        .quit-btn { background-color: #ff3333; color: #fff; border: none; padding: 12px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-
-        @media (max-width: 768px) {
-            body { justify-content: flex-start; padding-top: 90px; }
-            .back-link { top: 25px; }
-            .stream-container { padding: 30px 20px; }
-            .target-logo-img { max-width: 180px; height: 80px; }
-        }
+        .launch-panel { background: rgba(2,4,10,0.6); padding: 30px; border-radius: 16px; border: 1px solid #0033aa33; }
+        .launch-btn { background: linear-gradient(135deg, #0055ff, #00b3ff); color: #fff; border: none; padding: 18px; font-size: 15px; font-weight: 900; border-radius: 8px; cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 0 20px rgba(0,85,255,0.3); transition: 0.2s; }
+        .launch-btn:hover { transform: scale(1.01); box-shadow: 0 0 30px #00b3ff; }
+        
+        .stream-hud { display: none; background: #02040a; border: 2px dashed #00ddff; padding: 35px 20px; border-radius: 16px; box-shadow: 0 0 30px rgba(0,221,255,0.15); }
+        .timer-display { font-size: 46px; font-family: monospace; color: #00ddff; font-weight: bold; margin: 20px 0; letter-spacing: 2px; text-shadow: 0 0 15px rgba(0,221,255,0.4); }
+        .quit-btn { background-color: #ff3355; color: #fff; border: none; padding: 14px 36px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 13px; letter-spacing: 0.5px; box-shadow: 0 0 15px rgba(255,51,85,0.2); }
     </style>
 </head>
 <body>
 
     <div class="blur-bg-backdrop" id="backdrop-wall"></div>
 
-    <a href="/" class="back-link">← Return To Nexus</a>
+    <a href="/" class="back-link">← Terminal Nexus Gateway</a>
 
     <div class="stream-container">
-        <img id="display-logo" src="" class="target-logo-img" alt="Logo">
+        <div id="display-logo" class="cyber-logo-header-wrap">GAME</div>
         
         <div class="meta-strip">
             <span>Rig Allocation: <b style="color:#fff;">RTX 4080 Core</b></span>
-            <span>Rate: <span class="rate-highlight">60 Mins Pass</span></span>
+            <span>Billing Rate: <span class="rate-highlight">1 Pass / HR</span></span>
         </div>
         
         <div class="launch-panel" id="setup-panel">
-            <button class="launch-btn" onclick="triggerRigAllocation()">Mount Secure Session</button>
+            <button class="launch-btn" onclick="triggerRigAllocation()">Mount Secure Runtime Node</button>
         </div>
 
         <div class="stream-hud" id="active-hud">
-            <div style="font-size: 11px; color: #76b900; text-transform: uppercase; font-weight: 900;">🔴 ALLOCATION ACTIVE</div>
+            <div style="font-size: 11px; color: #00ddff; text-transform: uppercase; font-weight: 900; letter-spacing: 1px;">🔴 CORE STREAM FEED STABLE</div>
             <div class="timer-display" id="countdown-timer">60:00</div>
-            <button class="quit-btn" onclick="terminateSession()">Kill Connection</button>
+            <button class="quit-btn" onclick="terminateSession()">Kill Pipeline Connection</button>
         </div>
     </div>
 
     <script>
         const database = {
-            gta5: { logo: "https://www.pngmart.com/files/10/Grand-Theft-Auto-V-Logo-PNG-Transparent-Image.png", wall: "https://images2.alphacoders.com/474/474439.jpg" },
-            cyberpunk: { logo: "https://www.pngmart.com/files/22/Cyberpunk-2077-Logo-PNG-Transparent.png", wall: "https://images4.alphacoders.com/114/1147721.jpg" },
-            cs2: { logo: "https://www.pngmart.com/files/23/Counter-Strike-2-Logo-PNG-Isolated-Photo.png", wall: "https://images.alphacoders.com/132/1328404.jpeg" }
+            gta5: { title: "GTA V", wall: "https://images2.alphacoders.com/474/474439.jpg", color: "#0077ff" },
+            cyberpunk: { title: "CYBERPUNK", wall: "https://images4.alphacoders.com/114/1147721.jpg", color: "#fcee0a" },
+            cs2: { title: "CS // 2", wall: "https://images.alphacoders.com/132/1328404.jpeg", color: "#ff9900" }
         };
 
         const urlParams = new URLSearchParams(window.location.search);
         const gameId = urlParams.get('id') || 'gta5';
         const gameData = database[gameId] || database.gta5;
 
-        document.getElementById('display-logo').src = gameData.logo;
+        const logoEl = document.getElementById('display-logo');
+        logoEl.innerText = gameData.title;
+        logoEl.style.borderColor = gameData.color;
+        logoEl.style.color = gameData.color;
+        logoEl.style.textShadow = `0 0 15px ${gameData.color}`;
+        logoEl.style.boxShadow = `0 0 30px ${gameData.color}66`;
+
         document.getElementById('backdrop-wall').style.backgroundImage = `url('${gameData.wall}')`;
 
         let countdownInterval = null;
@@ -87,7 +88,7 @@
                     startLiveTimer(60 * 60);
                 } else {
                     const err = await res.json();
-                    alert(`Rejected: ${err.message}`);
+                    alert(`Declined: ${err.message}`);
                 }
             } catch(e) { 
                 document.getElementById('setup-panel').style.display = 'none';
@@ -118,7 +119,7 @@
             document.getElementById('active-hud').style.display = 'none';
             document.getElementById('setup-panel').style.display = 'block';
             document.getElementById('countdown-timer').innerText = "60:00";
-            alert("Session stopped safely.");
+            alert("Node container wiped cleanly.");
         }
     </script>
 </body>
