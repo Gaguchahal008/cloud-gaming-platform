@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const fs = require('fs'); // Core Node module to handle files on the hard drive
+const fs = require('fs'); // Core Node module to read/write files on your hard drive
 const app = express();
 
 // CRITICAL FOR DEPLOYMENT: Uses the internet provider's dynamic port, or 3000 locally
@@ -17,6 +17,7 @@ function readDatabase() {
         if (!fs.existsSync(DB_FILE)) {
             // Create default profile data if database doesn't exist yet
             const defaultData = {
+                gamertag: "Young Goat",
                 isSteamSynced: false,
                 steamId: null,
                 walletBalance: 250, 
@@ -29,7 +30,7 @@ function readDatabase() {
         return JSON.parse(fileContent);
     } catch (err) {
         console.error("Error reading database file, returning basic memory state:", err);
-        return { isSteamSynced: false, steamId: null, walletBalance: 250, activeSession: false };
+        return { gamertag: "Young Goat", isSteamSynced: false, steamId: null, walletBalance: 250, activeSession: false };
     }
 }
 
@@ -46,9 +47,21 @@ function saveDatabase(data) {
 //           SERVER API ENDPOINTS
 // ==========================================
 
-// Endpoint: Returns current state variables (Wallet, Sync Status)
+// Endpoint: Returns current state variables (Wallet, Sync Status, Gamertag)
 app.get('/api/user-status', (req, res) => {
     res.json(readDatabase());
+});
+
+// Endpoint: Update profile identity configurations and save to database file
+app.post('/api/update-profile', (req, res) => {
+    const { gamertag } = req.body;
+    if (gamertag && gamertag.trim() !== "") {
+        let session = readDatabase();
+        session.gamertag = gamertag.trim();
+        saveDatabase(session);
+        return res.json({ success: true, gamertag: session.gamertag });
+    }
+    res.status(400).json({ success: false, message: "Invalid identity parameter details." });
 });
 
 // Endpoint: Handles fake Steam account linkage simulation
@@ -110,7 +123,7 @@ app.get('/', (req, res) => {
 // Start the server using the dynamic deployment port configuration
 app.listen(PORT, () => {
     console.log(`====================================================`);
-    console.log(`🚀 Storage Server Active on Port: ${PORT}`);
+    console.log(`🚀 Production Storage Server Active on Port: ${PORT}`);
     console.log(`🔗 Local Testing Link: http://localhost:${PORT}`);
     console.log(`====================================================`);
 });
