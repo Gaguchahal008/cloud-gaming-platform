@@ -5,55 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stream Allocation Container</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
-        body { background-color: #0a0a0a; color: #ffffff; padding: 40px 5%; }
-        header { margin-bottom: 40px; }
-        .back-link { color: #76b900; text-decoration: none; font-weight: bold; display: inline-block; margin-bottom: 20px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        body { background-color: #0d0d0d; color: #ffffff; padding: 30px 5%; }
         
-        .stream-container { background-color: #121212; border: 1px solid #222; border-radius: 12px; padding: 40px; max-width: 800px; margin: 0 auto; display: flex; gap: 30px; align-items: center; }
-        .game-preview-img { width: 220px; height: 300px; object-fit: cover; border-radius: 6px; border: 1px solid #333; }
+        .back-link { color: #76b900; text-decoration: none; font-weight: bold; display: inline-block; margin-bottom: 20px; font-size: 15px; }
+        
+        .stream-container { background-color: #161616; border: 1px solid #222; border-radius: 12px; padding: 30px; max-width: 800px; margin: 0 auto; display: flex; gap: 30px; align-items: center; }
+        .game-preview-img { width: 200px; height: 270px; object-fit: cover; border-radius: 8px; border: 1px solid #333; }
         .stream-details { flex: 1; }
-        .stream-details h1 { font-size: 32px; margin-bottom: 10px; }
-        .meta-strip { margin-bottom: 20px; display: flex; gap: 15px; font-size: 14px; color: #aaa; }
+        .stream-details h1 { font-size: 28px; margin-bottom: 10px; }
+        
+        .meta-strip { margin-bottom: 15px; display: flex; gap: 15px; font-size: 13px; color: #aaa; }
         .rate-highlight { color: #76b900; font-weight: bold; }
+        .description-text { color: #aaa; font-size: 14px; line-height: 1.5; margin-bottom: 20px; }
         
-        .launch-panel { background: #1a1a1a; padding: 20px; border-radius: 6px; border: 1px solid #2a2a2a; margin-top: 20px; }
-        .launch-btn { background-color: #76b900; color: #000; border: none; padding: 14px 30px; font-size: 16px; font-weight: bold; border-radius: 4px; cursor: pointer; width: 100%; text-transform: uppercase; transition: 0.3s; }
-        .launch-btn:hover { background-color: #8ae200; box-shadow: 0 0 15px rgba(118, 185, 0, 0.4); }
+        .launch-panel { background: #1f1f1f; padding: 20px; border-radius: 8px; border: 1px solid #2a2a2a; }
+        .launch-btn { background-color: #76b900; color: #000; border: none; padding: 14px; font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; text-transform: uppercase; }
         
-        /* Live Streaming HUD Elements */
-        .stream-hud { display: none; background: #000; border: 2px dashed #76b900; padding: 25px; border-radius: 6px; margin-top: 20px; text-align: center; }
-        .timer-display { font-size: 36px; font-family: 'Courier New', Courier, monospace; color: #76b900; font-weight: bold; margin: 10px 0; }
-        .quit-btn { background-color: #ff3333; color: #fff; border: none; padding: 10px 20px; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-        .quit-btn:hover { background-color: #cc0000; }
+        /* Live Streaming HUD */
+        .stream-hud { display: none; background: #000; border: 2px dashed #76b900; padding: 20px; border-radius: 8px; text-align: center; }
+        .timer-display { font-size: 32px; font-family: monospace; color: #76b900; font-weight: bold; margin: 10px 0; }
+        .quit-btn { background-color: #ff3333; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 5px; }
+
+        /* ==================================================== */
+        /* 🔥 PHONE RESPONSIVE STYLING                          */
+        /* ==================================================== */
+        @media (max-width: 768px) {
+            body { padding: 20px 4%; }
+            .stream-container { flex-direction: column; text-align: center; padding: 20px; gap: 20px; } /* Poster stacks on top on mobile */
+            .game-preview-img { width: 160px; height: 220px; }
+            .stream-details h1 { font-size: 24px; }
+            .meta-strip { justify-content: center; font-size: 12px; }
+            .description-text { font-size: 13px; }
+            .launch-btn { padding: 12px; font-size: 14px; }
+        }
     </style>
 </head>
 <body>
 
-    <header>
-        <a href="/" class="back-link">← Return to Library Dashboard</a>
-    </header>
+    <a href="/" class="back-link">← Return to Dashboard</a>
 
     <div class="stream-container">
-        <img id="display-poster" src="" class="game-preview-img" alt="Poster Display">
+        <img id="display-poster" src="" class="game-preview-img" alt="Poster">
         <div class="stream-details">
-            <h1 id="display-title">Loading Parameters...</h1>
+            <h1 id="display-title">Loading...</h1>
             <div class="meta-strip">
-                <span>Infrastructure: <b style="color: #fff;">RTX 4080 Rig</b></span>
-                <span>Billing Rate: <span class="rate-highlight">₹100 / Hour</span></span>
+                <span>Server Rig: <b>RTX 4080</b></span>
+                <span>Rate: <span class="rate-highlight">₹100 / Hr</span></span>
             </div>
-            <p style="color: #aaa; font-size: 14px; line-height: 1.5; margin-bottom: 20px;">
-                Allocates dedicated NVMe storage instances and bridges server execution blocks. Safe states commit back to cloud storage blocks instantly upon rig termination.
+            <p class="description-text">
+                Allocates mobile latency acceleration lanes down to the core node. Safe states save automatically on exit.
             </p>
             
             <div class="launch-panel" id="setup-panel">
-                <button class="launch-btn" id="action-trigger" onclick="triggerRigAllocation()">Initialize Core Stream Node</button>
+                <button class="launch-btn" onclick="triggerRigAllocation()">Start Game Stream</button>
             </div>
 
             <div class="stream-hud" id="active-hud">
-                <div style="font-size: 12px; color: #aaa; text-transform: uppercase; letter-spacing: 1px;">🔴 Live Container Pipeline Active</div>
+                <div style="font-size: 11px; color: #aaa; text-transform: uppercase;">🔴 Streaming Active</div>
                 <div class="timer-display" id="countdown-timer">60:00</div>
-                <button class="quit-btn" onclick="terminateSession()">Terminate Rig Allocation</button>
+                <button class="quit-btn" onclick="terminateSession()">Disconnect Session</button>
             </div>
         </div>
     </div>
@@ -84,16 +95,13 @@
                 const out = await res.json();
                 
                 if (res.ok) {
-                    // Hide the launch panel, show the active countdown dashboard
                     document.getElementById('setup-panel').style.display = 'none';
                     document.getElementById('active-hud').style.display = 'block';
-                    
-                    startLiveTimer(60 * 60); // 60 minutes converted to total seconds
+                    startLiveTimer(60 * 60);
                 } else {
-                    alert(`❌ Allocation Halted: ${out.message}`);
+                    alert(`❌ Failed: ${out.message}`);
                 }
             } catch(e) { 
-                alert("[DEMO MODE] Core connection simulated at ₹100/hr billing setup."); 
                 document.getElementById('setup-panel').style.display = 'none';
                 document.getElementById('active-hud').style.display = 'block';
                 startLiveTimer(60 * 60);
@@ -102,25 +110,18 @@
 
         function startLiveTimer(totalSeconds) {
             if (countdownInterval) clearInterval(countdownInterval);
-
             countdownInterval = setInterval(() => {
                 totalSeconds--;
-                
                 if (totalSeconds <= 0) {
                     clearInterval(countdownInterval);
                     terminateSession();
                     return;
                 }
-
                 let minutes = Math.floor(totalSeconds / 60);
                 let seconds = totalSeconds % 60;
-
-                // Format display strings to preserve double digits (e.g., 05:09 instead of 5:9)
-                let displayMinutes = minutes < 10 ? "0" + minutes : minutes;
-                let displaySeconds = seconds < 10 ? "0" + seconds : seconds;
-
-                document.getElementById('countdown-timer').innerText = `${displayMinutes}:${displaySeconds}`;
-            }, 1000); // Triggers tick script block exactly every 1 second
+                document.getElementById('countdown-timer').innerText = 
+                    `${minutes < 10 ? "0" + minutes : minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+            }, 1000);
         }
 
         async function terminateSession() {
@@ -129,10 +130,7 @@
                 const res = await fetch('/api/terminate-session', { method: 'POST' });
                 const out = await res.json();
                 alert(out.message);
-            } catch (e) {
-                alert("Session terminated securely inside sandbox layer.");
-            }
-            // Reset page display parameters
+            } catch (e) { alert("Session stopped."); }
             document.getElementById('active-hud').style.display = 'none';
             document.getElementById('setup-panel').style.display = 'block';
             document.getElementById('countdown-timer').innerText = "60:00";
