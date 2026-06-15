@@ -3,9 +3,10 @@ const path = require('path');
 const fs = require('fs');
 const app = express();
 
+// Uses environment port on Render, or 3000 locally
 const PORT = process.env.PORT || 3000; 
 
-// 🔥 CONFIGURATION: Your live active UPI ID and business name
+// 🔥 CONFIGURATION: Your direct active mobile UPI handle
 const CONFIG_MERCHANT_UPI_ID = "8872791624@fam"; 
 const CONFIG_MERCHANT_NAME = "CloudRigs Arcade";
 
@@ -14,7 +15,7 @@ app.use(express.json());
 
 const DB_FILE = path.join(__dirname, 'database.json');
 
-// Helper Function: Read data from your database file safely
+// Safely reads state configurations from disk storage
 function readDatabase() {
     try {
         if (!fs.existsSync(DB_FILE)) {
@@ -25,26 +26,26 @@ function readDatabase() {
                 walletBalance: 0,     
                 playtimeMinutes: 0,     
                 activeSession: false,
-                usedUTRs: [] // Tracks all successfully claimed 12-digit transaction numbers
+                usedUTRs: [] 
             };
             fs.writeFileSync(DB_FILE, JSON.stringify(defaultData, null, 2));
             return defaultData;
         }
         const fileContent = fs.readFileSync(DB_FILE, 'utf8');
         let parsed = JSON.parse(fileContent);
-        if (!parsed.usedUTRs) parsed.usedUTRs = []; // Fail-safe check
+        if (!parsed.usedUTRs) parsed.usedUTRs = []; 
         return parsed;
     } catch (err) {
         return { gamertag: "Young Goat", walletBalance: 0, playtimeMinutes: 0, activeSession: false, usedUTRs: [] };
     }
 }
 
-// Helper Function: Write and save data securely to disk storage
+// Commits runtime updates securely back to disk
 function saveDatabase(data) {
     try {
         fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
     } catch (err) {
-        console.error("Critical database save failure:", err);
+        console.error("Critical database file commit error:", err);
     }
 }
 
@@ -57,44 +58,34 @@ app.get('/api/user-status', (req, res) => {
 });
 
 app.get('/api/payment-config', (req, res) => {
-    res.json({
-        vpa: CONFIG_MERCHANT_UPI_ID,
-        payeeName: CONFIG_MERCHANT_NAME
-    });
+    res.json({ vpa: CONFIG_MERCHANT_UPI_ID, payeeName: CONFIG_MERCHANT_NAME });
 });
 
-// 🔥 NEW: Validates the 12-Digit UTR structure and checks for duplicates
+// Validates the 12-Digit UTR structure and acts as anti-cheat lock
 app.post('/api/verify-utr', (req, res) => {
     const { utr, amount } = req.body;
     let session = readDatabase();
 
-    // 1. Structural Check: Must be exactly 12 numeric digits
     const utrRegex = /^\d{12}$/;
     if (!utr || !utrRegex.test(utr)) {
         return res.status(400).json({ 
             success: false, 
-            message: "Invalid UTR Format! A valid UPI Ref No. / UTR must be exactly 12 digits long." 
+            message: "Invalid UTR Format! A valid UPI Ref No. must be exactly 12 numeric digits." 
         });
     }
 
-    // 2. Anti-Cheat Check: Has this UTR been claimed before?
     if (session.usedUTRs.includes(utr)) {
         return res.status(400).json({ 
             success: false, 
-            message: "Transaction Rejected! This UTR has already been claimed and used." 
+            message: "Transaction Rejected! This unique UTR has already been claimed." 
         });
     }
 
-    // 3. Process the Claim
-    session.usedUTRs.push(utr); // Lock this UTR forever
-    session.walletBalance += parseInt(amount); // Credit their cash container
+    session.usedUTRs.push(utr); 
+    session.walletBalance += parseInt(amount); 
     saveDatabase(session);
 
-    res.json({ 
-        success: true, 
-        message: "Payment verified successfully!", 
-        newBalance: session.walletBalance 
-    });
+    res.json({ success: true, newBalance: session.walletBalance });
 });
 
 app.post('/api/buy-pass', (req, res) => {
@@ -104,7 +95,7 @@ app.post('/api/buy-pass', (req, res) => {
     if (session.walletBalance < cost) {
         return res.status(400).json({ 
             success: false, 
-            message: `Insufficient Cash! You need ₹${cost} to activate this pass.` 
+            message: `Insufficient Cash! You need ₹${cost} to complete this conversion pass.` 
         });
     }
 
@@ -147,10 +138,10 @@ app.post('/api/update-profile', (req, res) => {
     res.status(400).json({ success: false });
 });
 
-// ROUTING RE-DIRECTIONS
+// SUB-FOLDER ROUTING RE-DIRECTIONS
 app.get('/pages/game.html', (req, res) => res.sendFile(path.join(__dirname, 'pages', 'game.html')));
 app.get('/pages/login.html', (req, res) => res.sendFile(path.join(__dirname, 'pages', 'login.html')));
 app.get('/pages/pricing.html', (req, res) => res.sendFile(path.join(__dirname, 'pages', 'pricing.html')));
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 
-app.listen(PORT, () => console.log(`🚀 Production Core Active on Port: ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Playtime Engine Active on Port: ${PORT}`));

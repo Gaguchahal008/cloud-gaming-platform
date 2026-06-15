@@ -8,30 +8,27 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', sans-serif; }
         body { background-color: #050505; color: #ffffff; min-height: 100vh; padding: 30px 5%; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; }
         
-        /* Dynamic Cinematic Blurred Wall */
         .blur-bg-backdrop { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-size: cover; background-position: center; filter: blur(50px) brightness(0.25); z-index: 1; pointer-events: none; }
-        
         .back-link { color: #76b900; text-decoration: none; font-weight: bold; font-size: 15px; position: absolute; top: 30px; left: 5%; z-index: 10; }
         
-        .stream-container { position: relative; z-index: 5; background: rgba(20, 20, 20, 0.6); border: 1px solid #222; backdrop-filter: blur(20px); border-radius: 24px; padding: 40px; width: 100%; max-width: 750px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
+        .stream-container { position: relative; z-index: 5; background: rgba(20, 20, 20, 0.6); border: 1px solid #222; backdrop-filter: blur(20px); border-radius: 24px; padding: 40px; width: 100%; max-width: 750px; text-align: center; }
         .target-logo-img { max-width: 260px; height: 110px; object-fit: contain; margin: 0 auto 25px auto; display: block; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.8)); }
         
         .meta-strip { margin-bottom: 25px; display: flex; gap: 20px; font-size: 13px; color: #aaa; justify-content: center; }
         .rate-highlight { color: #76b900; font-weight: bold; }
         
         .launch-panel { background: rgba(5,5,5,0.5); padding: 25px; border-radius: 12px; border: 1px solid #2a2a2a; margin-top: 20px; }
-        .launch-btn { background-color: #76b900; color: #000; border: none; padding: 16px; font-size: 16px; font-weight: 900; border-radius: 8px; cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(118,185,0,0.3); }
+        .launch-btn { background-color: #76b900; color: #000; border: none; padding: 16px; font-size: 16px; font-weight: 900; border-radius: 8px; cursor: pointer; width: 100%; text-transform: uppercase; }
         
-        .stream-hud { display: none; background: #000; border: 2px dashed #76b900; padding: 30px 20px; border-radius: 12px; text-align: center; box-shadow: 0 0 20px rgba(118,185,0,0.1); }
-        .timer-display { font-size: 40px; font-family: monospace; color: #76b900; font-weight: bold; margin: 15px 0; letter-spacing: 1px; }
-        .quit-btn { background-color: #ff3333; color: #fff; border: none; padding: 12px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 13px; }
+        .stream-hud { display: none; background: #000; border: 2px dashed #76b900; padding: 30px 20px; border-radius: 12px; text-align: center; }
+        .timer-display { font-size: 40px; font-family: monospace; color: #76b900; font-weight: bold; margin: 15px 0; }
+        .quit-btn { background-color: #ff3333; color: #fff; border: none; padding: 12px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
 
         @media (max-width: 768px) {
             body { justify-content: flex-start; padding-top: 90px; }
             .back-link { top: 25px; }
             .stream-container { padding: 30px 20px; }
             .target-logo-img { max-width: 180px; height: 80px; }
-            .timer-display { font-size: 32px; }
         }
     </style>
 </head>
@@ -42,7 +39,7 @@
     <a href="/" class="back-link">← Return To Nexus</a>
 
     <div class="stream-container">
-        <img id="display-logo" src="" class="target-logo-img" alt="Game Logo">
+        <img id="display-logo" src="" class="target-logo-img" alt="Logo">
         
         <div class="meta-strip">
             <span>Rig Allocation: <b style="color:#fff;">RTX 4080 Core</b></span>
@@ -54,7 +51,7 @@
         </div>
 
         <div class="stream-hud" id="active-hud">
-            <div style="font-size: 11px; color: #76b900; text-transform: uppercase; font-weight: 900; letter-spacing: 1px;">🔴 CLOUD ALLOCATION RUNNING</div>
+            <div style="font-size: 11px; color: #76b900; text-transform: uppercase; font-weight: 900;">🔴 ALLOCATION ACTIVE</div>
             <div class="timer-display" id="countdown-timer">60:00</div>
             <button class="quit-btn" onclick="terminateSession()">Kill Connection</button>
         </div>
@@ -62,9 +59,9 @@
 
     <script>
         const database = {
-            gta5: { logo: "https://upload.wikimedia.org/wikipedia/commons/e/e1/Grand_Theft_Auto_V_Logo.svg", wall: "https://images2.alphacoders.com/474/474439.jpg" },
-            cyberpunk: { logo: "https://upload.wikimedia.org/wikipedia/commons/7/77/Cyberpunk_2077_logo.svg", wall: "https://images4.alphacoders.com/114/1147721.jpg" },
-            cs2: { logo: "https://upload.wikimedia.org/wikipedia/commons/1/1d/Counter-Strike_2_logo.svg", wall: "https://images.alphacoders.com/132/1328404.jpeg" }
+            gta5: { logo: "https://www.pngmart.com/files/10/Grand-Theft-Auto-V-Logo-PNG-Transparent-Image.png", wall: "https://images2.alphacoders.com/474/474439.jpg" },
+            cyberpunk: { logo: "https://www.pngmart.com/files/22/Cyberpunk-2077-Logo-PNG-Transparent.png", wall: "https://images4.alphacoders.com/114/1147721.jpg" },
+            cs2: { logo: "https://www.pngmart.com/files/23/Counter-Strike-2-Logo-PNG-Isolated-Photo.png", wall: "https://images.alphacoders.com/132/1328404.jpeg" }
         };
 
         const urlParams = new URLSearchParams(window.location.search);
@@ -117,9 +114,7 @@
 
         async function terminateSession() {
             clearInterval(countdownInterval);
-            try {
-                await fetch('/api/terminate-session', { method: 'POST' });
-            } catch (e) {}
+            try { await fetch('/api/terminate-session', { method: 'POST' }); } catch (e) {}
             document.getElementById('active-hud').style.display = 'none';
             document.getElementById('setup-panel').style.display = 'block';
             document.getElementById('countdown-timer').innerText = "60:00";

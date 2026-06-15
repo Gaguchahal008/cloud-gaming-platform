@@ -26,15 +26,12 @@
         .buy-btn { background: #222; border: 1px solid #444; color: #fff; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .tier-card.featured .buy-btn { background: #76b900; color: #000; border: none; }
 
-        /* POPUP OVERLAY STYLING */
         .upi-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 5000; justify-content: center; align-items: center; padding: 20px; }
         .upi-modal-box { background: #161616; border: 1px solid #333; border-radius: 16px; width: 100%; max-width: 380px; padding: 25px; text-align: center; }
         .btn-launch-intent { background: #76b900; color: #000; font-weight: bold; padding: 14px; border-radius: 8px; text-decoration: none; display: block; margin-bottom: 20px; font-size: 15px; text-align: center; }
         
-        /* INPUT FIELD */
         .utr-input-box { background: #222; border: 1px solid #444; color: #fff; width: 100%; padding: 14px; border-radius: 8px; font-size: 16px; text-align: center; margin-bottom: 12px; font-weight: bold; letter-spacing: 2px; }
         .utr-input-box:focus { border-color: #76b900; outline: none; }
-
         .btn-verify-payment { background: #1b2838; color: #66c0f4; border: 1px solid #66c0f4; font-weight: bold; padding: 14px; border-radius: 8px; width: 100%; cursor: pointer; font-size: 15px; margin-bottom: 12px; }
         .btn-cancel-payment { background: transparent; border: none; color: #888; font-size: 12px; cursor: pointer; text-decoration: underline; }
         @media (max-width: 768px) { .billing-grid { grid-template-columns: 1fr; } }
@@ -81,7 +78,7 @@
             <div style="font-size: 32px; margin-bottom: 10px;">💳</div>
             <div id="payment-headline" style="font-size: 18px; font-weight: bold; margin-bottom: 15px;">Deposit Amount</div>
             
-            <a href="#" class="btn-launch-intent" id="upi-intent-link" onclick="showInputContainer()">👉 Tap to Open Pay Apps</a>
+            <a href="#" class="btn-launch-intent" id="upi-intent-link">👉 Open Payment Apps</a>
             
             <div id="utr-verification-section">
                 <p style="font-size: 13px; color: #aaa; margin-bottom: 12px; text-align: left; line-height: 1.4;">
@@ -110,7 +107,7 @@
         async function triggerDirectUPI(amount) {
             pendingDepositAmount = amount;
             document.getElementById('payment-headline').innerText = `Deposit ₹${amount}`;
-            document.getElementById('user-utr-input').value = ""; // Clear old input
+            document.getElementById('user-utr-input').value = ""; 
             
             try {
                 const configRes = await fetch('/api/payment-config');
@@ -120,11 +117,8 @@
                 const upiLink = `upi://pay?pa=${config.vpa}&pn=${encodedPayeeName}&am=${amount}&cu=INR&tn=CloudRigs%20Wallet%20Topup`;
                 
                 document.getElementById('upi-intent-link').href = upiLink;
-                
-                // Show modal overlay
                 document.getElementById('upi-sheet').style.display = 'flex';
                 
-                // If on mobile device, trigger direct app-switching link overlay
                 if(/Android|iPhone|iPad/i.test(navigator.userAgent)) {
                     window.location.href = upiLink;
                 }
@@ -145,7 +139,6 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ utr: utrValue, amount: pendingDepositAmount })
                 });
-                
                 const data = await res.json();
                 
                 if (res.ok) {
@@ -155,7 +148,7 @@
                 } else {
                     alert(`❌ Verification Failed: ${data.message}`);
                 }
-            } catch(e) { alert("Network validation runtime exception."); }
+            } catch(e) { alert("Network validation error."); }
         }
 
         function closePaymentSheet() {
