@@ -5,9 +5,9 @@ const app = express();
 
 const PORT = process.env.PORT || 3000; 
 
-// 🔥 CONFIGURATION: Your updated live payment details
+// 🔥 CONFIGURATION: Updated Live Branding & Payment Details
 const CONFIG_MERCHANT_UPI_ID = "8872791624@fam"; 
-const CONFIG_MERCHANT_NAME = "CloudRigs Arcade";
+const CONFIG_MERCHANT_NAME = "Nexus Cloud Rigs";
 
 app.use(express.static(path.join(__dirname)));
 app.use(express.json());
@@ -122,4 +122,4 @@ app.get('/pages/login.html', (req, res) => res.sendFile(path.join(__dirname, 'pa
 app.get('/pages/pricing.html', (req, res) => res.sendFile(path.join(__dirname, 'pages', 'pricing.html')));
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 
-app.listen(PORT, () => console.log(`🚀 Cyber Server Processing on Port: ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Nexus Cloud Engine Processing on Port: ${PORT}`));
