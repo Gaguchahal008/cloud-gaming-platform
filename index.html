@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CloudRigs Mobile | High-Performance Cloud Gaming</title>
+    <title>CloudRigs Premium Dashboard</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-        body { background-color: #0d0d0d; color: #ffffff; padding-bottom: 80px; } /* Bottom padding prevents nav overlap on phones */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        body { background-color: #0d0d0d; color: #ffffff; padding-bottom: 80px; }
         
-        /* DESKTOP HEADER (Hidden on mobile) */
+        /* DESKTOP HEADER */
         header { background-color: #121212; border-bottom: 1px solid #222; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .logo { font-size: 24px; font-weight: bold; cursor: pointer; text-decoration: none; color: #fff; }
+        .logo { font-size: 24px; font-weight: bold; text-decoration: none; color: #fff; }
         .logo span { color: #76b900; }
         
         nav ul { display: flex; list-style: none; gap: 25px; }
-        nav ul li a { color: #aaa; text-decoration: none; font-weight: 500; transition: 0.3s; }
-        nav ul li a:hover, nav ul li.active a { color: #76b900; }
+        nav ul li a { color: #aaa; text-decoration: none; font-weight: 500; }
+        nav ul li.active a { color: #76b900; }
         
         .nav-right { display: flex; align-items: center; gap: 20px; }
         .wallet-link { color: #76b900; text-decoration: none; font-weight: bold; font-size: 14px; background: rgba(118,185,0,0.1); padding: 8px 12px; border-radius: 4px; border: 1px solid rgba(118,185,0,0.3); }
-        .steam-sync-btn { background-color: #1b2838; color: #fff; border: 1px solid #66c0f4; padding: 10px 18px; border-radius: 4px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .steam-sync-btn { background-color: #1b2838; color: #fff; border: 1px solid #66c0f4; padding: 10px 18px; border-radius: 4px; font-weight: bold; cursor: pointer; }
 
         /* HERO LAYER */
-        .hero { padding: 80px 5%; background: linear-gradient(rgba(13,13,13,0.85), #0d0d0d), url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1600&q=80') center/cover; min-height: 400px; display: flex; flex-direction: column; justify-content: center; }
+        .hero { padding: 80px 5%; background: linear-gradient(rgba(13,13,13,0.85), #0d0d0d), url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1600&q=80') center/cover; min-height: 380px; display: flex; flex-direction: column; justify-content: center; }
         .hero h1 { font-size: 42px; margin-bottom: 12px; font-weight: 800; }
         .hero p { color: #aaa; max-width: 600px; margin-bottom: 25px; line-height: 1.6; font-size: 15px; }
         .btn-primary { background-color: #76b900; color: #000; border: none; padding: 14px 35px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; display: inline-block; text-align: center; }
@@ -32,7 +32,7 @@
         .games-section h2 { margin-bottom: 25px; border-left: 4px solid #76b900; padding-left: 12px; font-size: 22px; }
         .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
         
-        .game-card { background-color: #161616; border: 1px solid #222; border-radius: 12px; overflow: hidden; transition: 0.3s; text-decoration: none; color: #fff; display: block; }
+        .game-card { background-color: #161616; border: 1px solid #222; border-radius: 12px; overflow: hidden; text-decoration: none; color: #fff; display: block; position: relative; }
         .poster-wrapper { position: relative; width: 100%; height: 280px; }
         .game-poster { width: 100%; height: 100%; object-fit: cover; }
         .rate-tag { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.85); border: 1px solid #76b900; color: #76b900; padding: 4px 8px; font-size: 12px; font-weight: bold; border-radius: 4px; }
@@ -40,33 +40,36 @@
         .game-title { font-weight: bold; font-size: 16px; margin-bottom: 6px; }
         .game-platform { font-size: 11px; color: #66c0f4; background: rgba(102,192,244,0.1); padding: 3px 8px; border-radius: 4px; display: inline-block; }
 
-        /* MOBILE BOTTOM NAVIGATION BAR (Hidden on desktop) */
+        /* MOBILE BOTTOM NAV */
         .mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background-color: #121212; border-top: 1px solid #222; height: 68px; z-index: 1000; grid-template-columns: repeat(3, 1fr); align-items: center; text-align: center; }
         .mobile-nav-item { color: #888; text-decoration: none; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-weight: 500; }
         .mobile-nav-item.active { color: #76b900; }
         .mobile-nav-icon { font-size: 20px; }
 
         /* ==================================================== */
-        /* 🔥 PHONE RESPONSIVE CSS INTERFACE (MEDIA QUERY)   */
+        /* 🔥 PREMIUM OVERLAY SAFEGUARD MODAL (NEW)              */
         /* ==================================================== */
-        @media (max-width: 768px) {
-            header { display: none; } /* Hide heavy desktop header */
-            .mobile-nav { display: grid; } /* Show sleek mobile app bar */
-            
-            .hero { padding: 40px 6%; min-height: 320px; text-align: center; align-items: center; }
-            .hero h1 { font-size: 28px; }
-            .hero p { font-size: 13px; margin-bottom: 20px; }
-            .btn-primary { width: 100%; padding: 12px; font-size: 15px; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
+        .modal-box { background: #161616; border: 2px solid #ff3333; border-radius: 16px; width: 100%; max-width: 400px; padding: 30px 20px; text-align: center; box-shadow: 0 0 30px rgba(255,51,51,0.2); }
+        .modal-icon { font-size: 40px; color: #ff3333; margin-bottom: 15px; }
+        .modal-box h3 { font-size: 22px; margin-bottom: 10px; }
+        .modal-box p { color: #aaa; font-size: 14px; line-height: 1.5; margin-bottom: 25px; }
+        .modal-actions { display: flex; flex-direction: column; gap: 10px; }
+        .btn-deposit { background: #76b900; color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 15px; text-decoration: none; display: block; }
+        .btn-close { background: #222; color: #fff; border: 1px solid #333; padding: 12px; border-radius: 8px; font-weight: 500; font-size: 14px; cursor: pointer; }
 
+        /* PHONE RESPONSIVE STYLES */
+        @media (max-width: 768px) {
+            header { display: none; }
+            .mobile-nav { display: grid; }
+            .hero { padding: 40px 6%; min-height: 300px; text-align: center; align-items: center; }
+            .hero h1 { font-size: 28px; }
+            .hero p { font-size: 13px; }
+            .btn-primary { width: 100%; padding: 12px; }
             .games-section { padding: 20px 4%; }
-            .games-section h2 { font-size: 18px; margin-bottom: 15px; }
-            
-            /* Change grid to double-column on mobile instead of stacked cards */
             .games-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-            .poster-wrapper { height: 180px; } /* Smaller images for compact mobile screens */
+            .poster-wrapper { height: 180px; }
             .game-title { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-            .game-details { padding: 10px; }
-            .rate-tag { font-size: 10px; padding: 2px 6px; bottom: 6px; right: 6px; }
         }
     </style>
 </head>
@@ -82,7 +85,7 @@
             </ul>
         </nav>
         <div class="nav-right">
-            <a href="/pages/pricing.html" class="wallet-link" id="wallet-nav">Wallet: ₹250</a>
+            <a href="/pages/pricing.html" class="wallet-link" id="wallet-nav">Wallet: ...</a>
             <button class="steam-sync-btn" onclick="redirectToSteamSync()">
                 <span id="sync-status-text">Sync Steam Account</span>
             </button>
@@ -90,17 +93,17 @@
     </header>
 
     <section class="hero">
-        <h1 id="mobile-hero-title">Grand Theft Auto V</h1>
-        <p>Stream high-end games instantly on your mobile or desktop device. Experience zero lag optimization paths.</p>
+        <h1>Grand Theft Auto V</h1>
+        <p>Stream high-end games instantly on your mobile or desktop device. Experience low-latency cloud synchronization lanes.</p>
         <div style="width: 100%; max-width: 300px;">
-            <a href="/pages/game.html?id=gta5" class="btn-primary">Launch Stream Rigs</a>
+            <button class="btn-primary" onclick="verifyBalanceBeforeLaunch('gta5')">Launch Stream Rigs</button>
         </div>
     </section>
 
     <section class="games-section">
         <h2>Top Cloud Titles</h2>
         <div class="games-grid">
-            <a href="/pages/game.html?id=gta5" class="game-card">
+            <div class="game-card" onclick="verifyBalanceBeforeLaunch('gta5')" style="cursor: pointer;">
                 <div class="poster-wrapper">
                     <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=400&q=80" class="game-poster" alt="GTA V">
                     <span class="rate-tag">₹100/hr</span>
@@ -109,8 +112,8 @@
                     <div class="game-title">Grand Theft Auto V</div>
                     <span class="game-platform">Steam</span>
                 </div>
-            </a>
-            <a href="/pages/game.html?id=cyberpunk" class="game-card">
+            </div>
+            <div class="game-card" onclick="verifyBalanceBeforeLaunch('cyberpunk')" style="cursor: pointer;">
                 <div class="poster-wrapper">
                     <img src="https://images.unsplash.com/photo-1551103782-8ab07afd45c1?auto=format&fit=crop&w=400&q=80" class="game-poster" alt="Cyberpunk 2077">
                     <span class="rate-tag">₹100/hr</span>
@@ -119,8 +122,8 @@
                     <div class="game-title">Cyberpunk 2077</div>
                     <span class="game-platform">Steam</span>
                 </div>
-            </a>
-            <a href="/pages/game.html?id=cs2" class="game-card">
+            </div>
+            <div class="game-card" onclick="verifyBalanceBeforeLaunch('cs2')" style="cursor: pointer;">
                 <div class="poster-wrapper">
                     <img src="https://images.unsplash.com/photo-1560253023-3ec5d502959f?auto=format&fit=crop&w=400&q=80" class="game-poster" alt="CS2">
                     <span class="rate-tag">₹100/hr</span>
@@ -129,9 +132,21 @@
                     <div class="game-title">Counter-Strike 2</div>
                     <span class="game-platform">Steam</span>
                 </div>
-            </a>
+            </div>
         </div>
     </section>
+
+    <div class="modal-overlay" id="balance-modal">
+        <div class="modal-box">
+            <div class="modal-icon">⚠️</div>
+            <h3>Insufficient Wallet Funds</h3>
+            <p>Your current platform balance is lower than the required flat ₹100 container allocation fee. Please recharge your wallet credits to spawn a secure rig instance.</p>
+            <div class="modal-actions">
+                <a href="/pages/pricing.html" class="btn-deposit">Go to Deposit Portal</a>
+                <button class="btn-close" onclick="closeWarningModal()">Dismiss Warning</button>
+            </div>
+        </div>
+    </div>
 
     <div class="mobile-nav">
         <a href="/" class="mobile-nav-item active">
@@ -140,7 +155,7 @@
         </a>
         <a href="/pages/pricing.html" class="mobile-nav-item">
             <span class="mobile-nav-icon">🪙</span>
-            <span id="mobile-wallet-text">Wallet: ₹250</span>
+            <span id="mobile-wallet-text">Wallet: ...</span>
         </a>
         <a href="/pages/login.html" class="mobile-nav-item">
             <span class="mobile-nav-icon">👤</span>
@@ -149,19 +164,42 @@
     </div>
 
     <script>
+        let currentCachedBalance = 0;
+
         async function fetchSystemState() {
             try {
                 const res = await fetch('/api/user-status');
                 const data = await res.json();
                 
-                // Update both Desktop and Mobile elements simultaneously
+                currentCachedBalance = data.walletBalance;
+                
                 document.getElementById('wallet-nav').innerText = `Wallet: ₹${data.walletBalance}`;
                 document.getElementById('mobile-wallet-text').innerText = `Wallet: ₹${data.walletBalance}`;
                 
+                if (data.gamertag) {
+                    const mobileProfileLink = document.querySelectorAll('.mobile-nav-item');
+                    mobileProfileLink.querySelector('span:not(.mobile-nav-icon)').innerText = data.gamertag;
+                }
+
                 if (data.isSteamSynced) {
                     document.getElementById('sync-status-text').innerText = "✅ Account Linked";
                 }
             } catch (e) { console.log("Offline Fallback Mode active."); }
+        }
+
+        // Interrupt function to verify wallet conditions before allowing navigation paths
+        function verifyBalanceBeforeLaunch(targetGameId) {
+            if (currentCachedBalance < 100) {
+                // Instantly open the stylish warning window instead of breaking down inside routing logs
+                document.getElementById('balance-modal').style.display = 'flex';
+            } else {
+                // If balance clears, bridge them directly to the allocation terminal
+                window.location.href = `/pages/game.html?id=${targetGameId}`;
+            }
+        }
+
+        function closeWarningModal() {
+            document.getElementById('balance-modal').style.display = 'none';
         }
 
         function redirectToSteamSync() {
