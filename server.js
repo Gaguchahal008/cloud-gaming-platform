@@ -5,7 +5,7 @@ const app = express();
 
 const PORT = process.env.PORT || 3000; 
 
-// 🔥 CONFIGURATION: Your live active UPI ID has been updated here!
+// 🔥 CONFIGURATION: Your live active UPI ID and business name
 const CONFIG_MERCHANT_UPI_ID = "8872791624@fam"; 
 const CONFIG_MERCHANT_NAME = "CloudRigs Arcade";
 
@@ -24,15 +24,18 @@ function readDatabase() {
                 steamId: null,
                 walletBalance: 0,     
                 playtimeMinutes: 0,     
-                activeSession: false
+                activeSession: false,
+                usedUTRs: [] // Tracks all successfully claimed 12-digit transaction numbers
             };
             fs.writeFileSync(DB_FILE, JSON.stringify(defaultData, null, 2));
             return defaultData;
         }
         const fileContent = fs.readFileSync(DB_FILE, 'utf8');
-        return JSON.parse(fileContent);
+        let parsed = JSON.parse(fileContent);
+        if (!parsed.usedUTRs) parsed.usedUTRs = []; // Fail-safe check
+        return parsed;
     } catch (err) {
-        return { gamertag: "Young Goat", walletBalance: 0, playtimeMinutes: 0, activeSession: false };
+        return { gamertag: "Young Goat", walletBalance: 0, playtimeMinutes: 0, activeSession: false, usedUTRs: [] };
     }
 }
 
@@ -60,15 +63,38 @@ app.get('/api/payment-config', (req, res) => {
     });
 });
 
-app.post('/api/add-funds', (req, res) => {
-    const { amount } = req.body;
-    if (amount && !isNaN(amount)) {
-        let session = readDatabase();
-        session.walletBalance += parseInt(amount);
-        saveDatabase(session);
-        return res.json({ success: true, newBalance: session.walletBalance });
+// 🔥 NEW: Validates the 12-Digit UTR structure and checks for duplicates
+app.post('/api/verify-utr', (req, res) => {
+    const { utr, amount } = req.body;
+    let session = readDatabase();
+
+    // 1. Structural Check: Must be exactly 12 numeric digits
+    const utrRegex = /^\d{12}$/;
+    if (!utr || !utrRegex.test(utr)) {
+        return res.status(400).json({ 
+            success: false, 
+            message: "Invalid UTR Format! A valid UPI Ref No. / UTR must be exactly 12 digits long." 
+        });
     }
-    res.status(400).json({ success: false, message: "Invalid payload parameters." });
+
+    // 2. Anti-Cheat Check: Has this UTR been claimed before?
+    if (session.usedUTRs.includes(utr)) {
+        return res.status(400).json({ 
+            success: false, 
+            message: "Transaction Rejected! This UTR has already been claimed and used." 
+        });
+    }
+
+    // 3. Process the Claim
+    session.usedUTRs.push(utr); // Lock this UTR forever
+    session.walletBalance += parseInt(amount); // Credit their cash container
+    saveDatabase(session);
+
+    res.json({ 
+        success: true, 
+        message: "Payment verified successfully!", 
+        newBalance: session.walletBalance 
+    });
 });
 
 app.post('/api/buy-pass', (req, res) => {

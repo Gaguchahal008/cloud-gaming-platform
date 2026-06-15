@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instant UPI Billing Portal</title>
+    <title>Secure UPI Billing Portal</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', sans-serif; }
         body { background-color: #0d0d0d; color: #ffffff; padding: 25px 5% 100px 5%; }
@@ -26,10 +26,16 @@
         .buy-btn { background: #222; border: 1px solid #444; color: #fff; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .tier-card.featured .buy-btn { background: #76b900; color: #000; border: none; }
 
+        /* POPUP OVERLAY STYLING */
         .upi-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 5000; justify-content: center; align-items: center; padding: 20px; }
         .upi-modal-box { background: #161616; border: 1px solid #333; border-radius: 16px; width: 100%; max-width: 380px; padding: 25px; text-align: center; }
-        .btn-launch-intent { background: #76b900; color: #000; font-weight: bold; padding: 14px; border-radius: 8px; text-decoration: none; display: block; margin-bottom: 15px; font-size: 15px; text-align: center; }
-        .btn-verify-payment { background: #1b2838; color: #66c0f4; border: 1px solid #66c0f4; font-weight: bold; padding: 12px; border-radius: 8px; width: 100%; cursor: pointer; font-size: 14px; margin-bottom: 10px; }
+        .btn-launch-intent { background: #76b900; color: #000; font-weight: bold; padding: 14px; border-radius: 8px; text-decoration: none; display: block; margin-bottom: 20px; font-size: 15px; text-align: center; }
+        
+        /* INPUT FIELD */
+        .utr-input-box { background: #222; border: 1px solid #444; color: #fff; width: 100%; padding: 14px; border-radius: 8px; font-size: 16px; text-align: center; margin-bottom: 12px; font-weight: bold; letter-spacing: 2px; }
+        .utr-input-box:focus { border-color: #76b900; outline: none; }
+
+        .btn-verify-payment { background: #1b2838; color: #66c0f4; border: 1px solid #66c0f4; font-weight: bold; padding: 14px; border-radius: 8px; width: 100%; cursor: pointer; font-size: 15px; margin-bottom: 12px; }
         .btn-cancel-payment { background: transparent; border: none; color: #888; font-size: 12px; cursor: pointer; text-decoration: underline; }
         @media (max-width: 768px) { .billing-grid { grid-template-columns: 1fr; } }
     </style>
@@ -45,9 +51,9 @@
         
         <div class="deposit-header">Select Recharge Amount via BHIM UPI:</div>
         <div class="quick-deposit-row">
-            <button class="btn-add-cash" onclick="triggerDirectUPI(100)">₹100 <span>+ Instant Deposit</span></button>
-            <button class="btn-add-cash" onclick="triggerDirectUPI(500)">₹500 <span>+ Instant Deposit</span></button>
-            <button class="btn-add-cash" onclick="triggerDirectUPI(1000)">₹1000 <span>+ Instant Deposit</span></button>
+            <button class="btn-add-cash" onclick="triggerDirectUPI(100)">₹100 <span>+ Safe Deposit</span></button>
+            <button class="btn-add-cash" onclick="triggerDirectUPI(500)">₹500 <span>+ Safe Deposit</span></button>
+            <button class="btn-add-cash" onclick="triggerDirectUPI(1000)">₹1000 <span>+ Safe Deposit</span></button>
         </div>
     </div>
 
@@ -72,15 +78,20 @@
 
     <div class="upi-overlay" id="upi-sheet">
         <div class="upi-modal-box">
-            <div style="font-size: 32px; margin-bottom: 10px;">⚡</div>
-            <div id="payment-headline" style="font-size: 18px; font-weight: bold; margin-bottom: 12px;">Paying Amount</div>
+            <div style="font-size: 32px; margin-bottom: 10px;">💳</div>
+            <div id="payment-headline" style="font-size: 18px; font-weight: bold; margin-bottom: 15px;">Deposit Amount</div>
             
-            <a href="#" class="btn-launch-intent" id="upi-intent-link">👉 Launch PhonePe / GPay / Paytm</a>
+            <a href="#" class="btn-launch-intent" id="upi-intent-link" onclick="showInputContainer()">👉 Tap to Open Pay Apps</a>
             
-            <p style="font-size: 12px; color: #888; margin-bottom: 20px;">Tap the green button above. It will instantly launch your phone's payment apps with the amount and merchant info pre-filled automatically.</p>
+            <div id="utr-verification-section">
+                <p style="font-size: 13px; color: #aaa; margin-bottom: 12px; text-align: left; line-height: 1.4;">
+                    Once payment finishes, copy the <b>12-digit UPI Ref No. / UTR</b> from your app receipt history and paste it below:
+                </p>
+                <input type="text" class="utr-input-box" id="user-utr-input" placeholder="12-Digit UTR No." maxlength="12">
+                <button class="btn-verify-payment" onclick="submitUTRClaim()">Verify & Claim Balance</button>
+            </div>
 
-            <button class="btn-verify-payment" onclick="confirmPaymentSuccess()">I Have Sent the Money</button>
-            <button class="btn-cancel-payment" onclick="closePaymentSheet()">Cancel</button>
+            <button class="btn-cancel-payment" onclick="closePaymentSheet()">Cancel Transaction</button>
         </div>
     </div>
 
@@ -98,42 +109,53 @@
 
         async function triggerDirectUPI(amount) {
             pendingDepositAmount = amount;
-            document.getElementById('payment-headline').innerText = `Paying ₹${amount}`;
+            document.getElementById('payment-headline').innerText = `Deposit ₹${amount}`;
+            document.getElementById('user-utr-input').value = ""; // Clear old input
             
             try {
                 const configRes = await fetch('/api/payment-config');
                 const config = await configRes.json();
                 
-                // Formulate deep link protocol schema parameters automatically
                 const encodedPayeeName = encodeURIComponent(config.payeeName);
                 const upiLink = `upi://pay?pa=${config.vpa}&pn=${encodedPayeeName}&am=${amount}&cu=INR&tn=CloudRigs%20Wallet%20Topup`;
                 
-                // Mount to link attribute
                 document.getElementById('upi-intent-link').href = upiLink;
                 
-                // On modern mobile devices, try an automatic click shortcut trigger immediately
+                // Show modal overlay
+                document.getElementById('upi-sheet').style.display = 'flex';
+                
+                // If on mobile device, trigger direct app-switching link overlay
                 if(/Android|iPhone|iPad/i.test(navigator.userAgent)) {
                     window.location.href = upiLink;
-                } else {
-                    document.getElementById('upi-sheet').style.display = 'flex';
                 }
-            } catch(e) { alert("Could not fetch payment configuration rules."); }
+            } catch(e) { alert("Could not fetch payment configurations."); }
         }
 
-        async function confirmPaymentSuccess() {
+        async function submitUTRClaim() {
+            const utrValue = document.getElementById('user-utr-input').value.trim();
+            
+            if (utrValue.length !== 12 || isNaN(utrValue)) {
+                alert("❌ Validation Error: UTR must be exactly 12 numeric digits!");
+                return;
+            }
+
             try {
-                const res = await fetch('/api/add-funds', {
+                const res = await fetch('/api/verify-utr', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ amount: pendingDepositAmount })
+                    body: JSON.stringify({ utr: utrValue, amount: pendingDepositAmount })
                 });
                 
+                const data = await res.json();
+                
                 if (res.ok) {
-                    alert(`Wallet Refreshed! Added ₹${pendingDepositAmount} securely.`);
+                    alert(`✅ Money Claimed Successfully!\n₹${pendingDepositAmount} has been added to your balance.`);
                     closePaymentSheet();
                     fetchSystemState();
+                } else {
+                    alert(`❌ Verification Failed: ${data.message}`);
                 }
-            } catch(e) { alert("Network validation error."); }
+            } catch(e) { alert("Network validation runtime exception."); }
         }
 
         function closePaymentSheet() {
