@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CloudRigs Playtime Hub</title>
+    <title>CloudRigs Platform Core</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', sans-serif; }
         body { background-color: #0d0d0d; color: #ffffff; padding-bottom: 80px; }
         header { background-color: #121212; border-bottom: 1px solid #222; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; }
         .logo { font-size: 24px; font-weight: bold; text-decoration: none; color: #fff; }
         .logo span { color: #76b900; }
-        .wallet-link { color: #76b900; text-decoration: none; font-weight: bold; font-size: 14px; background: rgba(118,185,0,0.1); padding: 8px 12px; border-radius: 4px; border: 1px solid rgba(118,185,0,0.3); }
-        .hero { padding: 60px 5%; background: #111; text-align: center; }
+        .status-indicators-bar { display: flex; gap: 10px; }
+        .metric-pill { color: #fff; background: #161616; padding: 8px 12px; border-radius: 6px; border: 1px solid #222; font-size: 13px; font-weight: bold; }
+        .metric-pill.highlight { color: #76b900; border-color: rgba(118,185,0,0.3); }
+        .hero { padding: 50px 5%; background: #111; text-align: center; }
         .btn-primary { background-color: #76b900; color: #000; border: none; padding: 14px 35px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; }
         .games-section { padding: 30px 5%; }
         .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
@@ -19,7 +21,6 @@
         .poster-wrapper { position: relative; width: 100%; height: 250px; }
         .game-poster { width: 100%; height: 100%; object-fit: cover; }
         .rate-tag { position: absolute; bottom: 10px; right: 10px; background: #000; color: #76b900; padding: 4px 8px; font-size: 12px; font-weight: bold; border-radius: 4px; border: 1px solid #76b900; }
-        .game-details { padding: 15px; }
         .mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background-color: #121212; border-top: 1px solid #222; height: 68px; grid-template-columns: repeat(3, 1fr); align-items: center; text-align: center; }
         .mobile-nav-item { color: #888; text-decoration: none; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .mobile-nav-item.active { color: #76b900; }
@@ -34,42 +35,43 @@
 
     <header>
         <a href="/" class="logo">CLOUD<span>RIGS</span></a>
-        <div class="nav-right">
-            <a href="/pages/pricing.html" class="wallet-link" id="wallet-nav">Time Left: -- mins</a>
+        <div class="status-indicators-bar">
+            <div class="metric-pill" id="header-cash">Wallet: ₹0</div>
+            <div class="metric-pill highlight" id="header-time">0 Mins</div>
         </div>
     </header>
 
     <section class="hero">
-        <h1>Arcade Cloud Rigs</h1>
-        <p style="color:#aaa; margin: 10px 0 20px 0;">Universal playtime access parameters enabled.</p>
-        <button class="btn-primary" onclick="checkTimeBeforeLaunch('gta5')">Quick Launch Rig</button>
+        <h1>Premium Arcade Grid</h1>
+        <p style="color:#aaa; margin: 10px 0 20px 0;">Mount gaming systems using active pass balances.</p>
+        <button class="btn-primary" onclick="checkTimeBeforeLaunch('gta5')">Launch Rigs</button>
     </section>
 
     <section class="games-section">
         <div class="games-grid">
             <div class="game-card" onclick="checkTimeBeforeLaunch('gta5')">
-                <div class="poster-wrapper"><img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=400&q=80" class="game-poster"><span class="rate-tag">Requires Pass</span></div>
-                <div class="game-details"><b>Grand Theft Auto V</b></div>
+                <div class="poster-wrapper"><img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=400&q=80" class="game-poster"><span class="rate-tag">60 Min Pass</span></div>
+                <div class="game-details" style="padding:12px;"><b>Grand Theft Auto V</b></div>
             </div>
             <div class="game-card" onclick="checkTimeBeforeLaunch('cyberpunk')">
-                <div class="poster-wrapper"><img src="https://images.unsplash.com/photo-1551103782-8ab07afd45c1?auto=format&fit=crop&w=400&q=80" class="game-poster"><span class="rate-tag">Requires Pass</span></div>
-                <div class="game-details"><b>Cyberpunk 2077</b></div>
+                <div class="poster-wrapper"><img src="https://images.unsplash.com/photo-1551103782-8ab07afd45c1?auto=format&fit=crop&w=400&q=80" class="game-poster"><span class="rate-tag">60 Min Pass</span></div>
+                <div class="game-details" style="padding:12px;"><b>Cyberpunk 2077</b></div>
             </div>
         </div>
     </section>
 
     <div class="modal-overlay" id="time-modal">
         <div class="modal-box">
-            <h3 style="margin-bottom:10px; color:#ff3333;">Out of Playtime!</h3>
-            <p style="color:#aaa; margin-bottom:20px; font-size:14px;">You need at least 60 minutes of unexpired playtime to mount high-end cloud compute clusters.</p>
-            <a href="/pages/pricing.html" class="btn-deposit">View Playtime Passes</a>
+            <h3 style="margin-bottom:10px; color:#ff3333;">Playtime Expired!</h3>
+            <p style="color:#aaa; margin-bottom:20px; font-size:14px;">You need a minimum of 60 active minutes loaded up to spin up a server session container.</p>
+            <a href="/pages/pricing.html" class="btn-deposit">Activate Time Pass</a>
             <button class="btn-close" onclick="document.getElementById('time-modal').style.display='none'">Dismiss</button>
         </div>
     </div>
 
     <div class="mobile-nav">
         <a href="/" class="mobile-nav-item active"><span>🎮</span><div>Games</div></a>
-        <a href="/pages/pricing.html" class="mobile-nav-item"><span id="mobile-time-text">⌛ -- Mins</span></a>
+        <a href="/pages/pricing.html" class="mobile-nav-item"><span id="mobile-wallet-hud">🪙 Wallet: ₹0</span><span id="mobile-time-hud" style="color:#76b900; font-weight:bold;">0 Mins</span></a>
         <a href="/pages/login.html" class="mobile-nav-item"><span>👤</span><div id="user-profile-label">Profile</div></a>
     </div>
 
@@ -82,8 +84,14 @@
                 const data = await res.json();
                 cachedPlaytime = data.playtimeMinutes;
                 
-                document.getElementById('wallet-nav').innerText = `${data.playtimeMinutes} Mins Left`;
-                document.getElementById('mobile-time-text').innerText = `⌛ ${data.playtimeMinutes} Mins`;
+                // Desktop Updates
+                document.getElementById('header-cash').innerText = `Wallet: ₹${data.walletBalance}`;
+                document.getElementById('header-time').innerText = `${data.playtimeMinutes} Mins`;
+                
+                // Mobile HUD Updates
+                document.getElementById('mobile-wallet-hud').innerText = `🪙 Wallet: ₹${data.walletBalance}`;
+                document.getElementById('mobile-time-hud').innerText = `${data.playtimeMinutes} Mins Left`;
+                
                 if(data.gamertag) document.getElementById('user-profile-label').innerText = data.gamertag;
             } catch (e) { console.log(e); }
         }

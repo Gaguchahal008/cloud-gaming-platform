@@ -3,18 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buy Playtime Passes</title>
+    <title>Cloud Wallet & Playtime Passes</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-        body { background-color: #0d0d0d; color: #ffffff; padding: 30px 5% 100px 5%; }
+        body { background-color: #0d0d0d; color: #ffffff; padding: 25px 5% 100px 5%; }
         .back-link { color: #76b900; text-decoration: none; font-weight: bold; display: inline-block; margin-bottom: 20px; }
-        h1 { font-size: 28px; margin-bottom: 8px; }
-        .subtitle { color: #aaa; margin-bottom: 30px; font-size: 14px; }
-        .billing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 20px; }
+        
+        /* WALLET CARD HUB */
+        .wallet-hub-panel { background: #161616; border: 1px solid #222; border-radius: 12px; padding: 20px; margin-bottom: 35px; display: flex; flex-direction: column; gap: 15px; }
+        .balance-label { font-size: 13px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; }
+        .balance-value { font-size: 36px; font-weight: 800; color: #76b900; }
+        .quick-deposit-row { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; }
+        .btn-add-cash { background: #222; border: 1px solid #333; color: #fff; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; white-space: nowrap; }
+        
+        h2 { font-size: 22px; margin-bottom: 15px; border-left: 4px solid #76b900; padding-left: 10px; }
+        .billing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
         .tier-card { background: #161616; border: 1px solid #222; border-radius: 12px; padding: 20px; text-align: center; }
         .tier-card.featured { border-color: #76b900; background: linear-gradient(145deg, #161616, #131f0d); }
-        .time-title { font-size: 20px; font-weight: bold; color: #76b900; }
-        .price { font-size: 32px; font-weight: 800; margin: 15px 0; }
+        .time-title { font-size: 18px; font-weight: bold; }
+        .price { font-size: 28px; font-weight: 800; margin: 12px 0; color: #76b900; }
         .buy-btn { background: #222; border: 1px solid #444; color: #fff; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .tier-card.featured .buy-btn { background: #76b900; color: #000; border: none; }
         @media (max-width: 768px) { .billing-grid { grid-template-columns: 1fr; } }
@@ -22,49 +29,86 @@
 </head>
 <body>
 
-    <a href="/" class="back-link">← Back to Dashboard</a>
-    <h1>Buy Game Playtime</h1>
-    <p class="subtitle">Purchase playtime credits. Time applies to all library games symmetrically.</p>
+    <a href="/" class="back-link">← Return to Dashboard</a>
+    
+    <div class="wallet-hub-panel">
+        <div>
+            <div class="balance-label">Available Cloud Wallet Funds</div>
+            <div class="balance-value" id="cash-display">₹0</div>
+            <div style="font-size:12px; color:#aaa; margin-top:4px;" id="minutes-display">Active Time Bank: 0 Mins</div>
+        </div>
+        <div class="quick-deposit-row">
+            <button class="btn-add-cash" onclick="depositCash(100)">+ Add ₹100</button>
+            <button class="btn-add-cash" onclick="depositCash(500)">+ Add ₹500</button>
+            <button class="btn-add-cash" onclick="depositCash(1000)">+ Add ₹1000</button>
+        </div>
+    </div>
 
+    <h2>Convert Wallet Funds to Playtime Passes</h2>
     <div class="billing-grid">
-        <!-- 60 Mins -->
         <div class="tier-card">
             <div class="time-title">60 Mins Pass</div>
             <div class="price">₹40</div>
-            <button class="buy-btn" onclick="purchaseTime(60)">Buy 1 Hour</button>
+            <button class="buy-btn" onclick="buyPass(40, 60)">Deduct ₹40</button>
         </div>
-        <!-- 5 Hours -->
         <div class="tier-card featured">
             <div class="time-title">5 Hours Pass</div>
             <div class="price">₹200</div>
-            <button class="buy-btn" onclick="purchaseTime(300)">Buy 5 Hours</button>
+            <button class="buy-btn" onclick="buyPass(200, 300)">Deduct ₹200</button>
         </div>
-        <!-- 1 Day -->
         <div class="tier-card">
             <div class="time-title">24 Hour Pass</div>
             <div class="price">₹500</div>
-            <button class="buy-btn" onclick="purchaseTime(1440)">Buy 1 Day</button>
+            <button class="buy-btn" onclick="buyPass(500, 1440)">Deduct ₹500</button>
         </div>
-        <!-- 1 Week -->
         <div class="tier-card">
             <div class="time-title">7 Day Pass</div>
             <div class="price">₹1200</div>
-            <button class="buy-btn" onclick="purchaseTime(10080)">Buy 1 Week</button>
+            <button class="buy-btn" onclick="buyPass(1200, 10080)">Deduct ₹1200</button>
         </div>
     </div>
 
     <script>
-        async function purchaseTime(mins) {
+        async function fetchSystemState() {
             try {
-                const res = await fetch('/api/add-playtime', {
+                const res = await fetch('/api/user-status');
+                const data = await res.json();
+                document.getElementById('cash-display').innerText = `₹${data.walletBalance}`;
+                document.getElementById('minutes-display').innerText = `Active Time Bank: ${data.playtimeMinutes} Mins`;
+            } catch(e) { console.log(e); }
+        }
+
+        async function depositCash(amt) {
+            try {
+                const res = await fetch('/api/add-funds', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ minutes: mins })
+                    body: JSON.stringify({ amount: amt })
                 });
                 const data = await res.json();
-                alert(`Pass Activated! Total Playtime Account Balance: ${data.newPlaytime} Mins`);
-            } catch(e) { alert("Demo processing complete."); }
+                fetchSystemState();
+            } catch(e) { alert("Deposit error"); }
         }
+
+        async function buyPass(costAmount, minutesAmount) {
+            try {
+                const res = await fetch('/api/buy-pass', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cost: costAmount, minutes: minutesAmount })
+                });
+                const data = await res.json();
+                
+                if (res.ok) {
+                    alert(`Pass Activated successfully!\nConverted ₹${costAmount} into ${minutesAmount} Mins.`);
+                    fetchSystemState();
+                } else {
+                    alert(`❌ Transaction Declined: ${data.message}`);
+                }
+            } catch(e) { alert("Processing error"); }
+        }
+
+        window.onload = fetchSystemState;
     </script>
 </body>
 </html>

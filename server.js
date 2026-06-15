@@ -18,7 +18,8 @@ function readDatabase() {
                 gamertag: "Young Goat",
                 isSteamSynced: false,
                 steamId: null,
-                playtimeMinutes: 60, // Users start with 60 free minutes of trial playtime
+                walletBalance: 100,     // Users start with ₹100 cash balance
+                playtimeMinutes: 0,     // Users start with 0 minutes of active playtime
                 activeSession: false
             };
             fs.writeFileSync(DB_FILE, JSON.stringify(defaultData, null, 2));
@@ -27,7 +28,7 @@ function readDatabase() {
         const fileContent = fs.readFileSync(DB_FILE, 'utf8');
         return JSON.parse(fileContent);
     } catch (err) {
-        return { gamertag: "Young Goat", isSteamSynced: false, steamId: null, playtimeMinutes: 60, activeSession: false };
+        return { gamertag: "Young Goat", isSteamSynced: false, steamId: null, walletBalance: 100, playtimeMinutes: 0, activeSession: false };
     }
 }
 
@@ -35,7 +36,7 @@ function saveDatabase(data) {
     try {
         fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
     } catch (err) {
-        console.error("Critical: Could not commit changes to disk storage:", err);
+        console.error("Critical database save error:", err);
     }
 }
 
@@ -43,43 +44,57 @@ function saveDatabase(data) {
 //           SERVER API ENDPOINTS
 // ==========================================
 
+// Endpoint: Fetch full profile state values
 app.get('/api/user-status', (req, res) => {
     res.json(readDatabase());
 });
 
-app.post('/api/update-profile', (req, res) => {
-    const { gamertag } = req.body;
-    if (gamertag && gamertag.trim() !== "") {
+// Endpoint: Process balance increments via portal deposits
+app.post('/api/add-funds', (req, res) => {
+    const { amount } = req.body;
+    if (amount && !isNaN(amount)) {
         let session = readDatabase();
-        session.gamertag = gamertag.trim();
+        session.walletBalance += parseInt(amount);
         saveDatabase(session);
-        return res.json({ success: true, gamertag: session.gamertag });
+        return res.json({ success: true, newBalance: session.walletBalance });
     }
-    res.status(400).json({ success: false, message: "Invalid identity parameters." });
+    res.status(400).json({ success: false, message: "Invalid payload parameters." });
 });
 
-// Endpoint: Adds exact playtime blocks based on purchased packages
-app.post('/api/add-playtime', (req, res) => {
-    const { minutes } = req.body;
-    if (minutes && !isNaN(minutes)) {
-        let session = readDatabase();
-        session.playtimeMinutes += parseInt(minutes);
-        saveDatabase(session);
-        return res.json({ success: true, newPlaytime: session.playtimeMinutes });
+// NEW Endpoint: Deducts wallet cash and converts it to active playtime minutes
+app.post('/api/buy-pass', (req, res) => {
+    const { cost, minutes } = req.body;
+    let session = readDatabase();
+
+    if (session.walletBalance < cost) {
+        return res.status(400).json({ 
+            success: false, 
+            message: `Insufficient Cash! You need ₹${cost} in your wallet to activate this pass.` 
+        });
     }
-    res.status(400).json({ success: false, message: "Invalid package allocation parameters." });
+
+    // Execute transaction exchange
+    session.walletBalance -= cost;
+    session.playtimeMinutes += minutes;
+    saveDatabase(session);
+
+    res.json({ 
+        success: true, 
+        newBalance: session.walletBalance, 
+        newPlaytime: session.playtimeMinutes 
+    });
 });
 
-// Endpoint: Deducts exactly 60 minutes when a game stream initializes
+// Endpoint: Consumes 60 minutes when a user fires up a game instance container
 app.post('/api/launch-game', (req, res) => {
     const { gameName } = req.body;
     let session = readDatabase();
 
     if (session.playtimeMinutes < 60) {
-        return res.status(400).json({ success: false, message: "Insufficient Playtime! You need at least 60 mins remaining." });
+        return res.status(400).json({ success: false, message: "Insufficient Playtime! Re-up your minutes pass." });
     }
 
-    session.playtimeMinutes -= 60; // Consume exactly 1 hour of their total playtime bank
+    session.playtimeMinutes -= 60; 
     session.activeSession = true;
     saveDatabase(session);
     res.json({ success: true, message: `Streaming rig launched for ${gameName}!`, newPlaytime: session.playtimeMinutes });
@@ -92,14 +107,23 @@ app.post('/api/terminate-session', (req, res) => {
     res.json({ success: true, message: "Session closed safely." });
 });
 
-// ==========================================
-//          ROUTING CONFIGURATIONS
-// ==========================================
+app.post('/api/update-profile', (req, res) => {
+    const { gamertag } = req.body;
+    if (gamertag && gamertag.trim() !== "") {
+        let session = readDatabase();
+        session.gamertag = gamertag.trim();
+        saveDatabase(session);
+        return res.json({ success: true, gamertag: session.gamertag });
+    }
+    res.status(400).json({ success: false });
+});
+
+// ROUTING RE-DIRECTIONS
 app.get('/pages/game.html', (req, res) => res.sendFile(path.join(__dirname, 'pages', 'game.html')));
 app.get('/pages/login.html', (req, res) => res.sendFile(path.join(__dirname, 'pages', 'login.html')));
 app.get('/pages/pricing.html', (req, res) => res.sendFile(path.join(__dirname, 'pages', 'pricing.html')));
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 
 app.listen(PORT, () => {
-    console.log(`🚀 Playtime Engine Active on Port: ${PORT}`);
+    console.log(`🚀 Transaction Engine Running on Port: ${PORT}`);
 });
