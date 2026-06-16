@@ -5,76 +5,90 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nexus Cloud Matrix - Gateway Entry Node</title>
     <style>
+        :root {
+            --bg-main: #02040a;
+            --panel-glass: rgba(6, 11, 25, 0.7);
+            --border-glow: #1e293b;
+            --neon-blue: #38bdf8;
+            --neon-green: #10b981;
+            --neon-red: #ef4444;
+            --text-muted: #64748b;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-        body { background-color: #02040a; color: #ffffff; min-height: 100vh; padding: 20px 4%; padding-bottom: 40px; }
+        body { background-color: var(--bg-main); color: #ffffff; min-height: 100vh; padding: 16px 4% 40px 4%; -webkit-tap-highlight-color: transparent; }
         
-        /* MODERN GLASS NAVIGATION HEADER */
+        /* PREMIUM GLASS NAVIGATION SYSTEM */
         header { 
             display: flex; 
             flex-direction: column;
             gap: 16px;
-            background: rgba(4, 9, 20, 0.6);
-            border: 1px solid #1e293b;
-            backdrop-filter: blur(20px);
+            background: var(--panel-glass);
+            border: 1px solid var(--border-glow);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
             padding: 20px; 
             border-radius: 16px;
-            margin-bottom: 30px; 
+            margin-bottom: 24px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
         }
         
-        .branding h1 { font-size: 20px; font-weight: 900; letter-spacing: 1px; color: #38bdf8; text-transform: uppercase; text-shadow: 0 0 15px rgba(56, 189, 248, 0.3); }
-        .branding p { font-size: 11px; color: #64748b; margin-top: 2px; }
+        .branding h1 { font-size: 22px; font-weight: 900; letter-spacing: 1.5px; color: var(--neon-blue); text-transform: uppercase; text-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }
+        .branding p { font-size: 11px; color: var(--text-muted); margin-top: 3px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
         
         .user-status-card { 
-            background: #02040a; 
-            border: 1px solid #1e293b; 
-            padding: 12px; 
+            background: rgba(2, 4, 10, 0.8); 
+            border: 1px solid var(--border-glow); 
+            padding: 14px; 
             border-radius: 12px; 
             display: flex; 
             justify-content: space-between;
             align-items: center;
             width: 100%;
         }
-        .metrics-group { display: flex; gap: 20px; }
-        .status-metric span { display: block; font-size: 9px; text-transform: uppercase; color: #64748b; font-weight: bold; }
-        .status-metric b { font-size: 14px; color: #fff; }
-        .pricing-link { background: #2563eb; color: #fff; text-decoration: none; padding: 10px 14px; border-radius: 8px; font-size: 12px; font-weight: bold; text-align: center; white-space: nowrap; transition: 0.2s; }
-        .pricing-link:hover { background: #1d4ed8; }
+        .metrics-group { display: flex; gap: 24px; }
+        .status-metric span { display: block; font-size: 9px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.5px; }
+        .status-metric b { font-size: 15px; color: #fff; font-weight: 800; }
+        .pricing-link { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; text-decoration: none; padding: 12px 18px; border-radius: 8px; font-size: 12px; font-weight: bold; text-align: center; white-space: nowrap; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+        .pricing-link:active { transform: scale(0.98); }
 
-        /* HERO CARD BLOCK */
-        .hero { background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), transparent); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 20px; padding: 30px 20px; margin-bottom: 30px; }
-        .hero h2 { font-size: 24px; margin-bottom: 8px; font-weight: 800; letter-spacing: -0.5px; }
-        .hero p { color: #94a3b8; font-size: 13px; line-height: 1.5; }
+        /* HERO PROMINENT ANNOUNCEMENT PANEL */
+        .hero { background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), transparent); border: 1px solid rgba(56, 189, 248, 0.15); border-radius: 20px; padding: 24px 20px; margin-bottom: 24px; position: relative; }
+        .hero h2 { font-size: 22px; margin-bottom: 8px; font-weight: 800; letter-spacing: -0.5px; }
+        .hero p { color: #94a3b8; font-size: 13px; line-height: 1.6; }
         
-        /* GRID TILES SYSTEM FOR RESPONSIVE RESOUTIONS */
-        .section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; margin-bottom: 16px; font-weight: bold; }
+        /* FLUID GAME BLADE SYSTEM CARDS GRID */
+        .section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 16px; font-weight: bold; }
         .game-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
         
-        .game-card { background: rgba(4, 9, 20, 0.7); border: 1px solid #1e293b; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; transition: all 0.2s ease; text-decoration: none; color: #fff; }
-        .game-card:hover { transform: translateY(-2px); border-color: #38bdf8; box-shadow: 0 10px 25px rgba(56, 189, 248, 0.05); }
+        .game-card { background: var(--panel-glass); border: 1px solid var(--border-glow); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s; text-decoration: none; color: #fff; }
+        .game-card:hover { border-color: var(--neon-blue); box-shadow: 0 12px 30px rgba(56, 189, 248, 0.06); }
+        .game-card:strong-press, .game-card:active { transform: scale(0.99); }
         
-        .card-banner { height: 150px; background-size: cover; background-position: center; position: relative; }
-        .card-tag { position: absolute; top: 12px; left: 12px; background: rgba(2, 4, 10, 0.85); border: 1px solid rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 6px; font-size: 9px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase; }
+        .card-banner { height: 160px; background-size: cover; background-position: center; position: relative; }
+        .card-tag { position: absolute; top: 12px; left: 12px; background: rgba(2, 4, 10, 0.85); border: 1px solid rgba(255,255,255,0.08); padding: 5px 10px; border-radius: 6px; font-size: 9px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
         
-        .card-body { padding: 16px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        .card-body h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
-        .card-body p { font-size: 12px; color: #64748b; line-height: 1.4; margin-bottom: 16px; }
+        .card-body { padding: 18px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .card-body h3 { font-size: 18px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.3px; }
+        .card-body p { font-size: 12px; color: #94a3b8; line-height: 1.5; margin-bottom: 20px; }
         
-        .action-indicator { border-top: 1px solid #1e293b; padding-top: 12px; display: flex; justify-content: space-between; align-items: center; }
-        .rate-badge { font-size: 10px; color: #38bdf8; font-weight: bold; text-transform: uppercase; }
-        .enter-btn { font-size: 11px; font-weight: bold; color: #fff; background: #1e293b; padding: 8px 14px; border-radius: 8px; border: 1px solid #334155; }
-        .game-card:hover .enter-btn { background: #38bdf8; color: #02040a; border-color: #38bdf8; }
+        .action-indicator { border-top: 1px solid rgba(30, 41, 59, 0.5); padding-top: 14px; display: flex; justify-content: space-between; align-items: center; }
+        .rate-badge { font-size: 10px; color: var(--neon-blue); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .enter-btn { font-size: 12px; font-weight: bold; color: #fff; background: rgba(30, 41, 59, 0.6); padding: 10px 16px; border-radius: 8px; border: 1px solid #334155; transition: 0.2s; }
+        .game-card:hover .enter-btn { background: var(--neon-blue); color: var(--bg-main); border-color: var(--neon-blue); font-weight: 700; box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); }
 
-        /* MEDIA QUERIES FOR TABLETS & LAPTOPS */
+        /* RESPONSIVE RESOLUTION BREAKPOINTS */
         @media (min-width: 640px) {
-            header { flex-direction: row; justify-content: space-between; align-items: center; }
-            .user-status-card { width: auto; gap: 24px; }
-            .hero { padding: 40px; }
-            .hero h2 { font-size: 28px; }
-            .game-grid { grid-template-columns: repeat(2, 1fr); }
+            header { flex-direction: row; justify-content: space-between; align-items: center; padding: 24px; }
+            .user-status-card { width: auto; gap: 24px; padding: 12px 20px; }
+            .hero { padding: 36px 30px; }
+            .hero h2 { font-size: 26px; }
+            .game-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
         }
         @media (min-width: 1024px) {
             .game-grid { grid-template-columns: repeat(3, 1fr); }
-            body { padding: 40px 8%; }
+            body { padding: 40px 6%; }
+            .hero h2 { font-size: 30px; }
         }
     </style>
 </head>
@@ -83,76 +97,76 @@
     <header>
         <div class="branding">
             <h1>Nexus Matrix</h1>
-            <p>Automated Loudplay Compute Blades</p>
+            <p>Automated Bare-Metal Deployment Engine</p>
         </div>
         
         <div class="user-status-card">
             <div class="metrics-group">
                 <div class="status-metric">
-                    <span>Active Profile</span>
+                    <span>Cluster Identity</span>
                     <b id="lbl-gamertag">Loading...</b>
                 </div>
                 <div class="status-metric">
-                    <span>Balance</span>
-                    <b id="lbl-playtime" style="color: #ef4444;">0 Mins</b>
+                    <span>Time Credits</span>
+                    <b id="lbl-playtime" style="color: var(--neon-red);">0 Mins</b>
                 </div>
             </div>
-            <a href="/pages/pricing.html" class="pricing-link">+ Top Up</a>
+            <a href="/pages/pricing.html" class="pricing-link">Top Up Account</a>
         </div>
     </header>
 
     <div class="hero">
-        <h2>Rent Dedicated Hardware</h2>
-        <p>Select an environment profile below. Link your Steam authentication identity, then spin up the container pipeline node directly to stream high-performance cloud computer output frames.</p>
+        <h2>Unthrottled Cloud Hardware PC</h2>
+        <p>Choose an execution configuration image below. Ensure your Steam authentication profiles are initialized, then provision an elite physical node cluster to run low-latency streaming desktop sessions.</p>
     </div>
 
-    <div class="section-title">Available Environment Profiles</div>
+    <div class="section-title">Available Blade Clusters</div>
 
     <div class="game-grid">
         <a href="/pages/game.html?id=gta5" class="game-card">
             <div class="card-banner" style="background-image: url('https://images2.alphacoders.com/474/474439.jpg');">
-                <div class="card-tag" style="color: #10b981;">Cache Active</div>
+                <div class="card-tag" style="color: var(--neon-green);">Pre-Caches Ready</div>
             </div>
             <div class="card-body">
                 <div>
                     <h3>Grand Theft Auto V</h3>
-                    <p>Launches instantly onto optimized Windows clusters with game file caches mounted natively.</p>
+                    <p>Launches inside specialized hypervisors running high-performance physical disk arrays for instantly fast loads.</p>
                 </div>
                 <div class="action-indicator">
-                    <span class="rate-badge">60 Min Blocks</span>
-                    <span class="enter-btn">Configure Rig →</span>
+                    <span class="rate-badge">60 Mins Block</span>
+                    <span class="enter-btn">Configure Node →</span>
                 </div>
             </div>
         </a>
 
         <a href="/pages/game.html?id=cyberpunk" class="game-card">
             <div class="card-banner" style="background-image: url('https://images4.alphacoders.com/114/1147721.jpg');">
-                <div class="card-tag" style="color: #eab308;">RTX 4080 Tier</div>
+                <div class="card-tag" style="color: #eab308;">Dedicated RTX 4080</div>
             </div>
             <div class="card-body">
                 <div>
                     <h3>Cyberpunk 2077</h3>
-                    <p>Pre-installed on NVMe drive setups to stream smooth 4K DLSS ray-traced configurations.</p>
+                    <p>Configured with pure high-bandwidth pipelines targeting stable unthrottled graphical configurations natively.</p>
                 </div>
                 <div class="action-indicator">
-                    <span class="rate-badge">60 Min Blocks</span>
-                    <span class="enter-btn">Configure Rig →</span>
+                    <span class="rate-badge">60 Mins Block</span>
+                    <span class="enter-btn">Configure Node →</span>
                 </div>
             </div>
         </a>
 
         <a href="/pages/game.html?id=blank_desktop" class="game-card">
             <div class="card-banner" style="background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop');">
-                <div class="card-tag" style="color: #38bdf8;">Full Access</div>
+                <div class="card-tag" style="color: var(--neon-blue);">Administrative Sandbox</div>
             </div>
             <div class="card-body">
                 <div>
-                    <h3>Bare-Metal Windows 11 PC</h3>
-                    <p>Raw cloud computer sandbox environment. Free to install custom loaders, alternative launchers, or software mods.</p>
+                    <h3>Bare Windows 11 Desktop</h3>
+                    <p>A completely fresh, high-spec OS space allocation block. Complete control to install custom configurations, alternative game stores, or applications.</p>
                 </div>
                 <div class="action-indicator">
-                    <span class="rate-badge">60 Min Blocks</span>
-                    <span class="enter-btn">Configure Rig →</span>
+                    <span class="rate-badge">60 Mins Block</span>
+                    <span class="enter-btn">Configure Node →</span>
                 </div>
             </div>
         </a>
@@ -162,7 +176,7 @@
         async function fetchSystemStateHandshakes() {
             try {
                 const res = await fetch('/api/user-status');
-                if (!res.ok) throw new Error("State read pipeline error.");
+                if (!res.ok) throw new Error("Database link fault.");
                 const data = await res.json();
                 
                 document.getElementById('lbl-gamertag').innerText = data.gamertag;
@@ -170,12 +184,12 @@
                 timeLabel.innerText = `${data.playtimeMinutes} Mins`;
                 
                 if (data.playtimeMinutes >= 60) {
-                    timeLabel.style.color = "#10b981"; 
+                    timeLabel.style.color = "var(--neon-green)"; 
                 } else {
-                    timeLabel.style.color = "#ef4444"; 
+                    timeLabel.style.color = "var(--neon-red)"; 
                 }
             } catch(e) {
-                console.error("Gateway interface communication dropped transaction parameters.");
+                console.error("Gateway runtime synchronization failed to map operational profiles.");
             }
         }
         window.onload = fetchSystemStateHandshakes;
