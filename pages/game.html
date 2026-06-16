@@ -3,107 +3,304 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stream Allocation Container</title>
+    <title>Nexus Cloud Matrix - Virtual Hardware Control Room</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: '-apple-system', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
         body { background-color: #02040a; color: #ffffff; min-height: 100vh; padding: 30px 5%; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; overflow: hidden; }
         
-        .blur-bg-backdrop { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-size: cover; background-position: center; filter: blur(60px) brightness(0.2); z-index: 1; pointer-events: none; }
-        .back-link { color: #00ddff; text-decoration: none; font-weight: bold; font-size: 14px; position: absolute; top: 30px; left: 5%; z-index: 10; letter-spacing: 0.5px; }
+        .blur-bg-backdrop { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-size: cover; background-position: center; filter: blur(60px) brightness(0.2); z-index: 1; pointer-events: none; transition: background-image 0.5s ease; }
+        .back-link { color: #38bdf8; text-decoration: none; font-weight: bold; font-size: 14px; position: absolute; top: 30px; left: 5%; z-index: 10; letter-spacing: 0.5px; }
         
-        .stream-container { position: relative; z-index: 5; background: rgba(4, 9, 20, 0.7); border: 1px solid #0055ff33; backdrop-filter: blur(30px); border-radius: 24px; padding: 50px 40px; width: 100%; max-width: 650px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.7); }
+        .stream-container { position: relative; z-index: 5; background: rgba(4, 9, 20, 0.7); border: 1px solid #1e293b; backdrop-filter: blur(30px); border-radius: 24px; padding: 40px; width: 100%; max-width: 650px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.7); }
         
-        .cyber-logo-header-wrap { display: inline-block; padding: 18px 35px; background: #02040a; border: 3px solid #0077ff; font-weight: 900; font-size: 32px; letter-spacing: 2px; text-transform: uppercase; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 0 30px rgba(0,119,255,0.4); text-shadow: 0 0 15px #0077ff; }
+        .cyber-logo-header-wrap { display: inline-block; padding: 14px 30px; background: #02040a; border: 3px solid #3b82f6; font-weight: 900; font-size: 30px; letter-spacing: 2px; text-transform: uppercase; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 0 30px rgba(59, 130, 246, 0.4); text-shadow: 0 0 15px #3b82f6; transition: all 0.3s ease; }
         
-        .meta-strip { margin-bottom: 30px; display: flex; gap: 24px; font-size: 13px; color: #8fa0c6; justify-content: center; text-transform: uppercase; letter-spacing: 0.5px; }
-        .rate-highlight { color: #00ddff; font-weight: bold; text-shadow: 0 0 8px rgba(0,221,255,0.3); }
+        /* PLAYTIME BLOCK BAR */
+        .balance-strip { display: flex; justify-content: space-between; align-items: center; background: #040914; border: 1px solid #1e293b; border-left: 4px solid #ef4444; padding: 14px 20px; border-radius: 10px; margin-bottom: 25px; text-align: left; }
+        .balance-strip.funded { border-left-color: #10b981; }
+        .balance-strip span { font-size: 11px; text-transform: uppercase; color: #64748b; display: block; font-weight: bold; }
+        .balance-strip b { font-size: 16px; color: #ef4444; }
+        .balance-strip.funded b { color: #10b981; }
+        .add-hours-btn { background: #1e293b; color: #fff; border: 1px solid #334155; padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; text-decoration: none; }
+        .add-hours-btn:hover { background: #334155; }
+
+        /* STEAM AUTHENTICATION LOCK GUARD BANNER */
+        .auth-status-banner { background: rgba(239, 68, 68, 0.06); border: 1px dashed #ef4444; border-radius: 10px; padding: 15px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; text-align: left; }
+        .auth-status-banner.verified { background: rgba(16, 185, 129, 0.05); border-color: #10b981; color: #10b981; }
+        .auth-status-banner b { font-size: 13px; display: block; color: #fff; }
+        .auth-status-banner.verified b { color: #10b981; }
+        .auth-status-banner p { font-size: 11px; color: #64748b; }
+        .auth-status-banner.verified p { color: #10b981; opacity: 0.8; }
+        .btn-auth-trigger { background: #ef4444; border: none; color: #fff; padding: 8px 14px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+
+        /* CLOUD PC TEMPLATE GENERATOR GRID */
+        .provider-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; margin-bottom: 12px; text-align: left; font-weight: bold; }
+        .provider-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 25px; }
+        .provider-card { background: #02040a; border: 1px solid #1e293b; padding: 16px; border-radius: 12px; cursor: pointer; text-align: left; transition: all 0.2s ease; }
+        .provider-card:hover { border-color: #3b82f6; }
+        .provider-card.selected { border-color: #38bdf8; background: rgba(56, 189, 248, 0.04); box-shadow: 0 0 20px rgba(56, 189, 248, 0.15); }
+        .provider-card b { display: block; font-size: 14px; color: #fff; margin-bottom: 4px; }
+        .provider-card p { font-size: 11px; color: #64748b; line-height: 1.3; }
+        .provider-card.selected p { color: #94a3b8; }
+
+        .meta-strip { margin-bottom: 25px; display: flex; gap: 24px; font-size: 11px; color: #64748b; justify-content: center; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        .launch-panel { background: rgba(2,4,10,0.6); padding: 30px; border-radius: 16px; border: 1px solid #0033aa33; }
-        .launch-btn { background: linear-gradient(135deg, #0055ff, #00b3ff); color: #fff; border: none; padding: 18px; font-size: 15px; font-weight: 900; border-radius: 8px; cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 0 20px rgba(0,85,255,0.3); transition: 0.2s; }
-        .launch-btn:hover { transform: scale(1.01); box-shadow: 0 0 30px #00b3ff; }
+        /* HARDWARE ACCESS TRIGGER PANELS */
+        .launch-panel { background: rgba(2,4,10,0.6); padding: 20px; border-radius: 16px; border: 1px solid #1e293b; }
+        .launch-btn { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; border: none; padding: 18px; font-size: 14px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3); }
+        .launch-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4); }
+        .launch-btn:disabled { background: #1e293b; color: #475569; cursor: not-allowed; box-shadow: none; transform: none; border: 1px solid #334155; }
         
-        .stream-hud { display: none; background: #02040a; border: 2px dashed #00ddff; padding: 35px 20px; border-radius: 16px; box-shadow: 0 0 30px rgba(0,221,255,0.15); }
-        .timer-display { font-size: 46px; font-family: monospace; color: #00ddff; font-weight: bold; margin: 20px 0; letter-spacing: 2px; text-shadow: 0 0 15px rgba(0,221,255,0.4); }
-        .quit-btn { background-color: #ff3355; color: #fff; border: none; padding: 14px 36px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 13px; letter-spacing: 0.5px; box-shadow: 0 0 15px rgba(255,51,85,0.2); }
+        /* LIVE BLADE INSTANCE STREAM HUD */
+        .stream-hud { display: none; background: #02040a; border: 2px dashed #38bdf8; padding: 35px 20px; border-radius: 16px; box-shadow: 0 0 30px rgba(56, 189, 248, 0.1); }
+        .timer-display { font-size: 46px; font-family: monospace; color: #38bdf8; font-weight: bold; margin: 20px 0; letter-spacing: 2px; text-shadow: 0 0 10px rgba(56, 189, 248, 0.3); }
+        .quit-btn { background-color: #dc2626; color: #fff; border: none; padding: 14px 36px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 13px; transition: 0.2s; }
+        .quit-btn:hover { background-color: #b91c1c; }
+
+        /* POPUP MODAL FRAME LAYERS */
+        .auth-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(2, 4, 10, 0.95); z-index: 9999; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(12px); }
+        .auth-modal { background: #040914; border: 1px solid #1e293b; border-radius: 20px; width: 100%; max-width: 400px; padding: 30px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        .steam-input { background: #02040a; border: 1px solid #334155; color: #fff; width: 100%; padding: 14px; border-radius: 8px; font-size: 16px; text-align: center; margin: 20px 0 15px 0; letter-spacing: 1px; transition: 0.2s; }
+        .steam-input:focus { border-color: #3b82f6; outline: none; }
+        .btn-submit-auth { background: #2563eb; color: #fff; border: none; width: 100%; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 13px; }
+        .btn-submit-auth:hover { background: #1d4ed8; }
     </style>
 </head>
 <body>
 
     <div class="blur-bg-backdrop" id="backdrop-wall"></div>
 
-    <a href="/" class="back-link">← Terminal Nexus Gateway</a>
+    <a href="/" class="back-link">← Return to Gateway Dashboard</a>
 
     <div class="stream-container">
-        <div id="display-logo" class="cyber-logo-header-wrap">GAME</div>
+        <!-- Dynamic Target Headless Logo Flag -->
+        <div id="display-logo" class="cyber-logo-header-wrap">LOUDPLAY VM</div>
         
-        <div class="meta-strip">
-            <span>Rig Allocation: <b style="color:#fff;">RTX 4080 Core</b></span>
-            <span>Billing Rate: <span class="rate-highlight">1 Pass / HR</span></span>
+        <!-- COMPONENT: Runtime Hour Track Ledger -->
+        <div class="balance-strip" id="balance-block">
+            <div>
+                <span>Account Time Credits</span>
+                <b id="playtime-readout">0 Minutes Loaded</b>
+            </div>
+            <a href="/pages/pricing.html" class="add-hours-btn">+ Buy Playtime</a>
         </div>
         
-        <div class="launch-panel" id="setup-panel">
-            <button class="launch-btn" onclick="triggerRigAllocation()">Mount Secure Runtime Node</button>
+        <!-- COMPONENT: Core Identity Linkage Enforcer Gate -->
+        <div class="auth-status-banner" id="steam-guard-banner">
+            <div>
+                <b id="guard-title">Steam Authorization Required</b>
+                <p id="guard-desc">Link your game profile signature to deploy computing blades.</p>
+            </div>
+            <button class="btn-auth-trigger" id="guard-action-btn" onclick="openAuthModal()">Link Steam</button>
         </div>
 
+        <!-- COMPONENT: Loudplay-Style System Image OS Target Configuration Selection -->
+        <div class="provider-title">Select Virtual Machine Machine OS Profile:</div>
+        <div class="provider-grid">
+            <div class="provider-card selected" id="tmpl-gta" onclick="selectTemplate('gta5_preinstalled')">
+                <b>GTA V High-Perf Cache</b>
+                <p>Pre-cached Steam installation files mounted automatically. Zero game updates required.</p>
+            </div>
+            <div class="provider-card" id="tmpl-blank" onclick="selectTemplate('blank_windows_desktop')">
+                <b>Blank Windows Cloud PC</b>
+                <p>Pure raw full administrative desktop workspace access. Install any custom app, mod or loader.</p>
+            </div>
+        </div>
+        
+        <div class="meta-strip">
+            <span>Hardware Provision Matrix: <b style="color:#fff;">Dedicated RTX 4080 GPU Block</b></span>
+            <span>Billing Rate: <b style="color:#38bdf8;">60 Min / Session</b></span>
+        </div>
+        
+        <!-- Interactive Launcher Execution Deck -->
+        <div class="launch-panel" id="setup-panel">
+            <button class="launch-btn" id="master-launch-btn" onclick="requestRigProvisioning()" disabled>Provision Secure Cloud PC Node</button>
+        </div>
+
+        <!-- Live Streaming HUD Monitor Interface Frame -->
         <div class="stream-hud" id="active-hud">
-            <div style="font-size: 11px; color: #00ddff; text-transform: uppercase; font-weight: 900; letter-spacing: 1px;">🔴 CORE STREAM FEED STABLE</div>
+            <div style="font-size: 11px; color: #38bdf8; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <span style="display:inline-block; width:8px; height:8px; background:#ef4444; border-radius:50%; animation: pulse 1.5s infinite;"></span>
+                Loudplay Stream Relay Stable
+            </div>
             <div class="timer-display" id="countdown-timer">60:00</div>
-            <button class="quit-btn" onclick="terminateSession()">Kill Pipeline Connection</button>
+            <button class="quit-btn" onclick="terminateCloudSession()">Decommission Node Pipeline</button>
+        </div>
+    </div>
+
+    <!-- TARGET IDENTIFICATION INPUT SLIDE SYSTEM OVERLAY -->
+    <div class="auth-overlay" id="auth-window">
+        <div class="auth-modal">
+            <div style="font-size: 32px; margin-bottom: 10px;">🔑</div>
+            <h3 style="text-transform: uppercase; letter-spacing: 0.5px; font-size: 16px;">Verify Steam Signature</h3>
+            <p style="font-size: 12px; color:#64748b; margin-top: 6px; line-height: 1.4;">
+                Provide your 17-digit numerical **SteamID64** profile sequence to secure safe execution handshakes with the headless Windows cloud rig host instances.
+            </p>
+            <input type="text" class="steam-input" id="steam-id-field" placeholder="76561198xxxxxxxx" maxlength="17">
+            <button class="btn-submit-auth" onclick="submitSteamVerification()">Bind Core Secure Identity</button>
+            <button style="background:transparent; border:none; color:#475569; font-size:12px; margin-top:15px; cursor:pointer; text-decoration:underline;" onclick="closeAuthModal()">Abort Signature Link</button>
         </div>
     </div>
 
     <script>
+        // Game UI profile metadata registry definitions
         const database = {
-            gta5: { title: "GTA V", wall: "https://images2.alphacoders.com/474/474439.jpg", color: "#0077ff" },
-            cyberpunk: { title: "CYBERPUNK", wall: "https://images4.alphacoders.com/114/1147721.jpg", color: "#fcee0a" },
-            cs2: { title: "CS // 2", wall: "https://images.alphacoders.com/132/1328404.jpeg", color: "#ff9900" }
+            gta5: { title: "GTA V CLOUD", wall: "https://images2.alphacoders.com/474/474439.jpg", color: "#2563eb" },
+            cyberpunk: { title: "CYBERPUNK PC", wall: "https://images4.alphacoders.com/114/1147721.jpg", color: "#fcee0a" },
+            cs2: { title: "CS//2 RIG", wall: "https://images.alphacoders.com/132/1328404.jpeg", color: "#ea580c" },
+            valorant: { title: "VALORANT VM", wall: "https://images3.alphacoders.com/112/1129483.jpg", color: "#dc2626" },
+            eldenring: { title: "ELDEN RING PC", wall: "https://images5.alphacoders.com/112/1123281.jpg", color: "#b45309" },
+            gta6: { title: "GTA VI PRO", wall: "https://images8.alphacoders.com/133/1338875.jpeg", color: "#ec4899" }
         };
 
         const urlParams = new URLSearchParams(window.location.search);
         const gameId = urlParams.get('id') || 'gta5';
         const gameData = database[gameId] || database.gta5;
 
+        let selectedTemplateProfile = 'gta5_preinstalled';
+        let isUserFullyVerified = false;
+        let countdownInterval = null;
+        let heartbeatInterval = null;
+        let currentlyRunningVmId = null;
+
+        // Sync visual theme structure elements directly with metadata profiles
         const logoEl = document.getElementById('display-logo');
         logoEl.innerText = gameData.title;
         logoEl.style.borderColor = gameData.color;
         logoEl.style.color = gameData.color;
+        logoEl.style.boxShadow = `0 0 30px ${gameData.color}44`;
         logoEl.style.textShadow = `0 0 15px ${gameData.color}`;
-        logoEl.style.boxShadow = `0 0 30px ${gameData.color}66`;
-
         document.getElementById('backdrop-wall').style.backgroundImage = `url('${gameData.wall}')`;
 
-        let countdownInterval = null;
-
-        async function triggerRigAllocation() {
+        // Load balance figures and sync access vectors instantly on boot
+        async function synchroniseNodeUserSessionState() {
             try {
-                const res = await fetch('/api/launch-game', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ gameName: gameId })
-                });
+                const res = await fetch('/api/user-status');
+                const data = await res.json();
                 
-                if (res.ok) {
-                    document.getElementById('setup-panel').style.display = 'none';
-                    document.getElementById('active-hud').style.display = 'block';
-                    startLiveTimer(60 * 60);
+                // 1. Evaluate hour credit capacities
+                const readout = document.getElementById('playtime-readout');
+                readout.innerText = `${data.playtimeMinutes} Minutes Loaded`;
+                const balanceBlock = document.getElementById('balance-block');
+                
+                if (data.playtimeMinutes >= 60) {
+                    balanceBlock.className = "balance-strip funded";
                 } else {
-                    const err = await res.json();
-                    alert(`Declined: ${err.message}`);
+                    balanceBlock.className = "balance-strip";
                 }
-            } catch(e) { 
-                document.getElementById('setup-panel').style.display = 'none';
-                document.getElementById('active-hud').style.display = 'block';
-                startLiveTimer(60 * 60);
+
+                // 2. Validate identity binding criteria states
+                if (data.isSteamSynced && data.steamId) {
+                    isUserFullyVerified = true;
+                    const banner = document.getElementById('steam-guard-banner');
+                    banner.className = "auth-status-banner verified";
+                    document.getElementById('guard-title').innerText = "Steam Pipeline Connection Verified";
+                    document.getElementById('guard-desc').innerText = `Secure Cryptographic Token Hook: ID ${data.steamId.substring(0,6)}...`;
+                    document.getElementById('guard-action-btn').style.display = 'none';
+                    
+                    if (data.playtimeMinutes >= 60) {
+                        document.getElementById('master-launch-btn').disabled = false;
+                    }
+                }
+            } catch(e) { console.error("Communication error reading user balance metrics from local state store."); }
+        }
+
+        function selectTemplate(templateId) {
+            selectedTemplateProfile = templateId;
+            document.querySelectorAll('.provider-card').forEach(c => c.classList.remove('selected'));
+            if (templateId === 'gta5_preinstalled') {
+                document.getElementById('tmpl-gta').classList.add('selected');
+            } else {
+                document.getElementById('tmpl-blank').classList.add('selected');
             }
         }
 
-        function startLiveTimer(totalSeconds) {
+        function openAuthModal() { document.getElementById('auth-window').style.display = 'flex'; }
+        function closeAuthModal() { document.getElementById('auth-window').style.display = 'none'; }
+
+        async function submitSteamVerification() {
+            const steamIdValue = document.getElementById('steam-id-field').value.trim();
+            if (steamIdValue.length !== 17 || isNaN(steamIdValue)) {
+                alert("Validation Exception: SteamID64 configuration vectors must consist of exactly 17 numerical values.");
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/auth-steam', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ steamId: steamIdValue })
+                });
+                if (res.ok) {
+                    alert("✅ Integration Binding Succeeded! Identity profile attached cleanly to tracking registry.");
+                    closeAuthModal();
+                    synchroniseNodeUserSessionState();
+                } else {
+                    const err = await res.json();
+                    alert(`Rejected: ${err.message}`);
+                }
+            } catch(e) { alert("Network connection interface timed out mapping state changes."); }
+        }
+
+        async function requestRigProvisioning() {
+            if (!isUserFullyVerified) {
+                alert("Security Error: Identity handshake token is required before mounting computing blocks.");
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/infrastructure/provision', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ gameTemplate: selectedTemplateProfile })
+                });
+                
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    document.getElementById('setup-panel').style.display = 'none';
+                    document.getElementById('active-hud').style.display = 'block';
+                    
+                    // Force state interface parameters to catch returned configuration metadata
+                    currentlyRunningVmId = "vm_node_rtx4080_stable_sea1"; // Tracks tracking hooks natively
+                    
+                    // Fire automated live keepalive systems to protect the billing loop against dropouts
+                    initializeKeepaliveTicksLoop(currentlyRunningVmId);
+                    startLiveTimerCountdown(60 * 60);
+                    
+                    // Loudplay Action Layer: Dynamically pass the WebRTC stream port down to the client wrapper canvas viewport
+                    setTimeout(() => { 
+                        alert("🚀 Node Ready! Directing display pipes to target Sunshine WebRTC stream mirror frame layer.");
+                        window.open(data.streamUrl, '_blank'); 
+                    }, 1000);
+                } else {
+                    alert(`Infrastructure Rejected Provisioning Request: ${data.message}`);
+                }
+            } catch(e) {
+                alert("Failed to communicate with the infrastructure orchestrator.");
+            }
+        }
+
+        function initializeKeepaliveTicksLoop(vmId) {
+            if (heartbeatInterval) clearInterval(heartbeatInterval);
+            // Ping server every 30 seconds to tell the backend the user is actively watching the screen
+            heartbeatInterval = setInterval(async () => {
+                try {
+                    await fetch('/api/infrastructure/heartbeat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ vmId: vmId })
+                    });
+                } catch(e) { console.warn("Watchdog keepalive heartbeat ping failed transmission."); }
+            }, 30000);
+        }
+
+        function startLiveTimerCountdown(totalSeconds) {
             if (countdownInterval) clearInterval(countdownInterval);
             countdownInterval = setInterval(() => {
                 totalSeconds--;
                 if (totalSeconds <= 0) {
                     clearInterval(countdownInterval);
-                    terminateSession();
+                    terminateCloudSession();
                     return;
                 }
                 let minutes = Math.floor(totalSeconds / 60);
@@ -113,14 +310,23 @@
             }, 1000);
         }
 
-        async function terminateSession() {
+        async function terminateCloudSession() {
             clearInterval(countdownInterval);
-            try { await fetch('/api/terminate-session', { method: 'POST' }); } catch (e) {}
+            clearInterval(heartbeatInterval);
+            
+            try { 
+                await fetch('/api/terminate-session', { method: 'POST' }); 
+            } catch (e) { console.error("Error dispatching termination vector directly down to cluster systems."); }
+            
             document.getElementById('active-hud').style.display = 'none';
             document.getElementById('setup-panel').style.display = 'block';
             document.getElementById('countdown-timer').innerText = "60:00";
-            alert("Node container wiped cleanly.");
+            
+            alert("Loudplay Cloud PC container released and decommissioned successfully.");
+            synchroniseNodeUserSessionState();
         }
+
+        window.onload = synchroniseNodeUserSessionState;
     </script>
 </body>
 </html>
