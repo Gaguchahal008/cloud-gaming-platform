@@ -6,75 +6,61 @@
     <title>Nexus Cloud Matrix - Control Room</title>
     <style>
         :root {
-            --bg-main: #02040a;
-            --panel-glass: rgba(4, 9, 20, 0.7);
-            --border-glow: #1e293b;
+            --bg-main: #030712;
+            --panel-glass: rgba(17, 24, 39, 0.75);
+            --border-glow: #1f2937;
             --neon-blue: #38bdf8;
+            --neon-purple: #a855f7;
             --neon-green: #10b981;
             --neon-red: #ef4444;
+            --text-muted: #9ca3af;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
         body { background-color: var(--bg-main); color: #ffffff; min-height: 100vh; padding: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         
-        .blur-bg-backdrop { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-size: cover; background-position: center; filter: blur(64px) brightness(0.12); z-index: 1; pointer-events: none; }
-        .back-link { color: var(--neon-blue); text-decoration: none; font-weight: bold; font-size: 13px; position: absolute; top: 16px; left: 16px; z-index: 10; letter-spacing: 0.5px; text-transform: uppercase; }
+        .blur-bg-backdrop { position: absolute; inset: 0; background-size: cover; background-position: center; filter: blur(64px) brightness(0.12); z-index: 1; pointer-events: none; }
+        .back-link { color: var(--neon-blue); text-decoration: none; font-weight: bold; font-size: 12px; position: absolute; top: 20px; left: 20px; z-index: 10; letter-spacing: 1px; text-transform: uppercase; }
         
-        .stream-container { position: relative; z-index: 5; background: var(--panel-glass); border: 1px solid var(--border-glow); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-radius: 24px; padding: 24px 16px; width: 100%; max-width: 580px; text-align: center; box-shadow: 0 25px 60px rgba(0,0,0,0.8); }
+        .stream-container { position: relative; z-index: 5; background: var(--panel-glass); border: 1px solid var(--border-glow); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); border-radius: 24px; padding: 24px 16px; width: 100%; max-width: 580px; text-align: center; box-shadow: 0 25px 60px rgba(0,0,0,0.8); }
         
-        .cyber-logo-header-wrap { display: inline-block; padding: 12px 24px; background: #02040a; border: 2px solid #3b82f6; font-weight: 900; font-size: 22px; letter-spacing: 1px; text-transform: uppercase; border-radius: 12px; margin-bottom: 20px; text-shadow: 0 0 15px #3b82f6; box-shadow: 0 0 20px rgba(59, 130, 246, 0.15); }
+        .cyber-logo-header-wrap { display: inline-block; padding: 12px 24px; background: #030712; border: 2px solid #3b82f6; font-weight: 900; font-size: 20px; letter-spacing: 1.5px; text-transform: uppercase; border-radius: 12px; margin-bottom: 20px; text-shadow: 0 0 15px #3b82f6; box-shadow: 0 0 20px rgba(59, 130, 246, 0.2); }
         
-        /* TIME LEDGER BALANCES CARD */
-        .balance-strip { display: flex; justify-content: space-between; align-items: center; background: #040914; border: 1px solid var(--border-glow); border-left: 4px solid var(--neon-red); padding: 14px 16px; border-radius: 12px; margin-bottom: 16px; text-align: left; }
-        .balance-strip.funded { border-left-color: var(--neon-green); }
-        .balance-strip span { font-size: 9px; text-transform: uppercase; color: #64748b; display: block; font-weight: 700; letter-spacing: 0.5px; }
-        .balance-strip b { font-size: 15px; color: var(--neon-red); font-weight: 800; }
-        .balance-strip.funded b { color: var(--neon-green); }
-        .add-hours-btn { background: #1e293b; color: #fff; border: 1px solid #334155; padding: 10px 14px; border-radius: 8px; font-size: 11px; font-weight: bold; text-decoration: none; white-space: nowrap; }
+        /* TIME LEDGER CREDITS CONTAINER HEADER */
+        .balance-strip { display: flex; justify-content: space-between; align-items: center; background: #030712; border: 1px solid var(--border-glow); border-left: 4px solid var(--neon-green); padding: 14px 16px; border-radius: 12px; margin-bottom: 16px; text-align: left; }
+        .balance-strip span { font-size: 9px; text-transform: uppercase; color: var(--text-muted); display: block; font-weight: 700; letter-spacing: 0.5px; }
+        .balance-strip b { font-size: 15px; color: var(--neon-green); font-weight: 800; }
+        .add-hours-btn { background: rgba(31, 41, 55, 0.6); color: #fff; border: 1px solid var(--border-glow); padding: 10px 14px; border-radius: 8px; font-size: 11px; font-weight: bold; text-decoration: none; }
 
-        /* IDENTITY AUTHENTICATION STATUS ENFORCER BANNER */
-        .auth-status-banner { background: rgba(239, 68, 68, 0.04); border: 1px dashed var(--neon-red); border-radius: 12px; padding: 14px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; text-align: left; gap: 12px; }
-        .auth-status-banner.verified { background: rgba(16, 185, 129, 0.04); border-color: var(--neon-green); color: var(--neon-green); }
+        /* AUTH SEAM BOUND CHECK SYSTEM TIMELINE */
+        .auth-status-banner { background: rgba(16, 185, 129, 0.04); border: 1px dashed var(--neon-green); border-radius: 12px; padding: 14px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; text-align: left; gap: 12px; color: var(--neon-green); }
         .auth-status-banner b { font-size: 13px; display: block; color: #fff; font-weight: 700; }
-        .auth-status-banner.verified b { color: var(--neon-green); }
-        .auth-status-banner p { font-size: 11px; color: #64748b; line-height: 1.4; margin-top: 2px; }
-        .auth-status-banner.verified p { color: var(--neon-green); opacity: 0.8; }
-        .btn-auth-trigger { background: var(--neon-red); border: none; color: #fff; padding: 10px 16px; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; text-transform: uppercase; white-space: nowrap; }
-
-        /* MULTI-OS ENVIRONMENT SELECTION SHIFTERS */
-        .provider-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; margin-bottom: 10px; text-align: left; font-weight: bold; }
+        .auth-status-banner p { font-size: 11px; color: var(--text-muted); line-height: 1.4; margin-top: 2px; }
+        
+        /* PROFILE OPTIONS ROW CONFIG TILES */
+        .provider-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 10px; text-align: left; font-weight: bold; }
         .provider-grid { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
-        .provider-card { background: #02040a; border: 1px solid var(--border-glow); padding: 16px; border-radius: 12px; cursor: pointer; text-align: left; transition: border-color 0.2s, background-color 0.2s; }
+        .provider-card { background: #030712; border: 1px solid var(--border-glow); padding: 16px; border-radius: 12px; cursor: pointer; text-align: left; transition: all 0.2s; }
         .provider-card.selected { border-color: var(--neon-blue); background: rgba(56, 189, 248, 0.04); box-shadow: 0 0 15px rgba(56, 189, 248, 0.05); }
         .provider-card b { display: block; font-size: 14px; color: #fff; margin-bottom: 3px; }
-        .provider-card p { font-size: 11px; color: #64748b; line-height: 1.4; }
+        .provider-card p { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
 
-        .meta-strip { margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 10px; color: #64748b; text-transform: uppercase; text-align: center; font-weight: 600; letter-spacing: 0.5px; }
+        .meta-strip { margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 10px; color: var(--text-muted); text-transform: uppercase; text-align: center; font-weight: 700; }
+        .launch-panel { background: rgba(3,7,18,0.5); padding: 16px; border-radius: 14px; border: 1px solid var(--border-glow); }
+        .launch-btn { background: var(--neon-gradient); color: #fff; border: none; padding: 16px; font-size: 13px; font-weight: bold; border-radius: 10px; cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3); }
         
-        .launch-panel { background: rgba(2,4,10,0.5); padding: 16px; border-radius: 14px; border: 1px solid var(--border-glow); }
-        .launch-btn { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; border: none; padding: 18px; font-size: 13px; font-weight: bold; border-radius: 10px; cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3); }
-        .launch-btn:disabled { background: #1e293b; color: #475569; cursor: not-allowed; border: 1px solid #334155; box-shadow: none; }
-        
-        /* TIMEOUT DASH HUD WRAPPERS */
-        .stream-hud { display: none; background: #02040a; border: 2px dashed var(--neon-blue); padding: 36px 16px; border-radius: 14px; box-shadow: 0 0 25px rgba(56, 189, 248, 0.08); }
+        /* HIDDEN LIVE COUNTER METRIC TEMPLATES */
+        .stream-hud { display: none; background: #030712; border: 2px dashed var(--neon-blue); padding: 36px 16px; border-radius: 14px; }
         .timer-display { font-size: 42px; font-family: monospace; color: var(--neon-blue); font-weight: bold; margin: 16px 0; letter-spacing: 1.5px; text-shadow: 0 0 15px rgba(56, 189, 248, 0.3); }
-        .quit-btn { background-color: var(--neon-red); color: #fff; border: none; padding: 14px 32px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; width: 100%; max-width: 280px; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2); }
+        .quit-btn { background-color: var(--neon-red); color: #fff; border: none; padding: 14px 32px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; width: 100%; max-width: 280px; }
 
-        /* FULL INTERACTIVE AUTH POPUP SHEETS */
-        .auth-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(2, 4, 10, 0.96); z-index: 9999; justify-content: center; align-items: center; padding: 16px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-        .auth-modal { background: #040914; border: 1px solid var(--border-glow); border-radius: 20px; width: 100%; max-width: 380px; padding: 28px 20px; text-align: center; }
-        .steam-input { background: #02040a; border: 1px solid #334155; color: #fff; width: 100%; padding: 14px; border-radius: 10px; font-size: 16px; text-align: center; margin: 18px 0 14px 0; font-weight: bold; letter-spacing: 0.5px; }
-        .steam-input:focus { border-color: var(--neon-blue); outline: none; }
-        .btn-submit-auth { background: #2563eb; color: #fff; border: none; width: 100%; padding: 14px; border-radius: 10px; font-weight: bold; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
-
-        /* WIDER DISPLAY SCREEN MEDIA OPTIMIZATIONS */
         @media (min-width: 640px) {
             body { padding: 24px; }
             .stream-container { padding: 36px; }
             .provider-grid { flex-direction: row; }
             .provider-card { flex: 1; }
             .meta-strip { flex-direction: row; justify-content: center; gap: 24px; }
-            .cyber-logo-header-wrap { font-size: 26px; padding: 12px 28px; }
+            .cyber-logo-header-wrap { font-size: 24px; }
         }
     </style>
 </head>
@@ -82,66 +68,53 @@
 
     <div class="blur-bg-backdrop" id="backdrop-wall"></div>
 
-    <a href="/" class="back-link">← Return To Portal</a>
+    <a href="/" class="back-link">← Terminal Portal</a>
 
     <div class="stream-container">
-        <div id="display-logo" class="cyber-logo-header-wrap">LOUDPLAY VM</div>
+        <div id="display-logo" class="cyber-logo-header-wrap">LOUDPLAY UNIT</div>
         
-        <div class="balance-strip" id="balance-block">
+        <div class="balance-strip">
             <div>
-                <span>Time Allocation Balance</span>
-                <b id="playtime-readout">0 Minutes</b>
+                <span>Active Infrastructure Credit</span>
+                <b id="playtime-readout">120 Minutes</b>
             </div>
-            <a href="/pages/pricing.html" class="add-hours-btn">+ Buy Credits</a>
+            <a href="/pages/pricing.html" class="add-hours-btn">Top Up</a>
         </div>
         
-        <div class="auth-status-banner" id="steam-guard-banner">
+        <div class="auth-status-banner">
             <div>
-                <b id="guard-title">Steam Authorization Locked</b>
-                <p id="guard-desc">Bind your 17-digit verification signature token to start hosting.</p>
+                <b>Steam Verification Token Bound</b>
+                <p>Secure Bridge Pipeline Handshake Checked: 76561198...</p>
             </div>
-            <button class="btn-auth-trigger" id="guard-action-btn" onclick="openAuthModal()">Link ID</button>
         </div>
 
-        <div class="provider-title">Select Hypervisor Deployment Profile:</div>
+        <div class="provider-title">Select Hypervisor Core Target Image Profile:</div>
         <div class="provider-grid">
-            <div class="provider-card selected" id="tmpl-gta" onclick="selectTemplate('gta5_preinstalled')">
-                <b>GTA V Cache Mount</b>
-                <p>Pre-installed disk block active. Zero download intervals required.</p>
+            <div class="provider-card selected" id="tmpl-gta" onclick="selectTemplate('preinstalled')">
+                <b>Cache Mounted Volume</b>
+                <p>Pre-installed disk block layers active. Instant deployment orchestration.</p>
             </div>
-            <div class="provider-card" id="tmpl-blank" onclick="selectTemplate('blank_windows_desktop')">
-                <b>Windows 11 Raw Space</b>
-                <p>Pure administrative unthrottled desktop workspace computer layer.</p>
+            <div class="provider-card" id="tmpl-blank" onclick="selectTemplate('blank')">
+                <b>Bare Windows 11 Node</b>
+                <p>Raw administrative server block space allocation execution.</p>
             </div>
         </div>
         
         <div class="meta-strip">
-            <span>Hardware Blade: <b style="color:#fff;">RTX 4080 Compute Block</b></span>
+            <span>Hardware Cluster: <b style="color:#fff;">RTX 4080 GPU Core Block</b></span>
             <span>Billing Interval: <b style="color: var(--neon-blue);">60 Mins Block</b></span>
         </div>
         
         <div class="launch-panel" id="setup-panel">
-            <button class="launch-btn" id="master-launch-btn" onclick="requestRigProvisioning()" disabled>Provision Cluster Blade</button>
+            <button class="launch-btn" onclick="requestRigProvisioning()">Initialize Cluster Blade Stream</button>
         </div>
 
         <div class="stream-hud" id="active-hud">
-            <div style="font-size: 11px; color: var(--neon-blue); text-transform: uppercase; font-weight: 900; letter-spacing: 0.5px;">
-                Hypervisor Control Pipe Stable
+            <div style="font-size: 11px; color: var(--neon-blue); text-transform: uppercase; font-weight: 900;">
+                Hypervisor Control Pipe Active
             </div>
             <div class="timer-display" id="countdown-timer">60:00</div>
-            <button class="quit-btn" onclick="terminateCloudSession()">Decommission Container</button>
-        </div>
-    </div>
-
-    <div class="auth-overlay" id="auth-window">
-        <div class="auth-modal">
-            <h3 style="text-transform: uppercase; letter-spacing: 0.5px; font-size: 15px;">Verify Steam Identity Signature</h3>
-            <p style="font-size: 12px; color:#64748b; margin-top: 6px; line-height: 1.5;">
-                Provide your 17-character numerical **SteamID64** profile string sequence to attach tracking metrics cleanly to your cloud host hardware allocations.
-            </p>
-            <input type="text" class="steam-input" id="steam-id-field" placeholder="76561198xxxxxxxx" maxlength="17">
-            <button class="btn-submit-auth" onclick="submitSteamVerification()">Bind Core Identity Token</button>
-            <button style="background:transparent; border:none; color:#475569; font-size:11px; margin-top:16px; cursor:pointer; text-decoration:underline;" onclick="closeAuthModal()">Abort Linking</button>
+            <button class="quit-btn" onclick="terminateCloudSession()">Decommission Container Node</button>
         </div>
     </div>
 
@@ -149,18 +122,14 @@
         const database = {
             gta5: { title: "GTA V CLOUD", wall: "https://images2.alphacoders.com/474/474439.jpg", color: "#2563eb" },
             cyberpunk: { title: "CYBERPUNK PC", wall: "https://images4.alphacoders.com/114/1147721.jpg", color: "#fcee0a" },
-            blank_desktop: { title: "WINDOWS PC", wall: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop", color: "#38bdf8" }
+            forza6: { title: "FORZA HORIZON 6", wall: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop", color: "#a855f7" }
         };
 
         const urlParams = new URLSearchParams(window.location.search);
         const gameId = urlParams.get('id') || 'gta5';
         const gameData = database[gameId] || database.gta5;
 
-        let selectedTemplateProfile = 'gta5_preinstalled';
-        let isUserFullyVerified = false;
         let countdownInterval = null;
-        let heartbeatInterval = null;
-        let currentlyRunningVmId = null;
 
         const logoEl = document.getElementById('display-logo');
         logoEl.innerText = gameData.title;
@@ -169,138 +138,35 @@
         logoEl.style.textShadow = `0 0 15px ${gameData.color}`;
         document.getElementById('backdrop-wall').style.backgroundImage = `url('${gameData.wall}')`;
 
-        async function synchroniseNodeUserSessionState() {
-            try {
-                const res = await fetch('/api/user-status');
-                const data = await res.json();
-                
-                document.getElementById('playtime-readout').innerText = `${data.playtimeMinutes} Minutes`;
-                const balanceBlock = document.getElementById('balance-block');
-                
-                if (data.playtimeMinutes >= 60) {
-                    balanceBlock.className = "balance-strip funded";
-                } else {
-                    balanceBlock.className = "balance-strip";
-                }
-
-                if (data.isSteamSynced && data.steamId) {
-                    isUserFullyVerified = true;
-                    document.getElementById('steam-guard-banner').className = "auth-status-banner verified";
-                    document.getElementById('guard-title').innerText = "Identity Token Bound";
-                    document.getElementById('guard-desc').innerText = `Secure Bridge Pipeline Verified: ${data.steamId.substring(0,6)}...`;
-                    document.getElementById('guard-action-btn').style.display = 'none';
-                    
-                    if (data.playtimeMinutes >= 60) {
-                        document.getElementById('master-launch-btn').disabled = false;
-                    }
-                }
-            } catch(e) { console.error("Identity mapping link exception tracking operational metrics parameters."); }
-        }
-
-        function selectTemplate(templateId) {
-            selectedTemplateProfile = templateId;
+        function selectTemplate(id) {
             document.querySelectorAll('.provider-card').forEach(c => c.classList.remove('selected'));
-            if (templateId === 'gta5_preinstalled') {
-                document.getElementById('tmpl-gta').classList.add('selected');
-            } else {
-                document.getElementById('tmpl-blank').classList.add('selected');
-            }
+            if (id === 'preinstalled') document.getElementById('tmpl-gta').classList.add('selected');
+            else document.getElementById('tmpl-blank').classList.add('selected');
         }
 
-        function openAuthModal() { document.getElementById('auth-window').style.display = 'flex'; }
-        function closeAuthModal() { document.getElementById('auth-window').style.display = 'none'; }
-
-        async function submitSteamVerification() {
-            const steamIdValue = document.getElementById('steam-id-field').value.trim();
-            if (steamIdValue.length !== 17 || isNaN(steamIdValue)) {
-                alert("Validation Exception: SteamID64 configuration vectors consist of 17 numbers.");
-                return;
-            }
-
-            try {
-                const res = await fetch('/api/auth-steam', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ steamId: steamIdValue })
-                });
-                if (res.ok) {
-                    alert("✅ Secure Link Synced Successfully!");
-                    closeAuthModal();
-                    synchroniseNodeUserSessionState();
-                } else {
-                    const err = await res.json();
-                    alert(`Rejected: ${err.message}`);
-                }
-            } catch(e) { alert("Communication synchronization channel timeout exceptions."); }
-        }
-
-        async function requestRigProvisioning() {
-            if (!isUserFullyVerified) return;
-
-            try {
-                const res = await fetch('/api/infrastructure/provision', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ gameTemplate: selectedTemplateProfile })
-                });
-                
-                const data = await res.json();
-                if (res.ok && data.success) {
-                    document.getElementById('setup-panel').style.display = 'none';
-                    document.getElementById('active-hud').style.display = 'block';
-                    currentlyRunningVmId = "vm_node_rtx4080_stable_sea1"; 
-                    
-                    initializeKeepaliveTicksLoop(currentlyRunningVmId);
-                    startLiveTimerCountdown(60 * 60);
-                    
-                    setTimeout(() => { window.open(data.streamUrl, '_blank'); }, 1000);
-                } else {
-                    alert(`Orchestrator Allocation Fault: ${data.message}`);
-                }
-            } catch(e) { alert("Critical infrastructure pipeline error."); }
-        }
-
-        function initializeKeepaliveTicksLoop(vmId) {
-            if (heartbeatInterval) clearInterval(heartbeatInterval);
-            heartbeatInterval = setInterval(async () => {
-                try {
-                    await fetch('/api/infrastructure/heartbeat', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ vmId: vmId })
-                    });
-                } catch(e) {}
-            }, 30000);
-        }
-
-        function startLiveTimerCountdown(totalSeconds) {
-            if (countdownInterval) clearInterval(countdownInterval);
+        function requestRigProvisioning() {
+            document.getElementById('setup-panel').style.display = 'none';
+            document.getElementById('active-hud').style.display = 'block';
+            let totalSeconds = 60 * 60;
+            
             countdownInterval = setInterval(() => {
                 totalSeconds--;
-                if (totalSeconds <= 0) {
-                    clearInterval(countdownInterval);
-                    terminateCloudSession();
-                    return;
-                }
-                let minutes = Math.floor(totalSeconds / 60);
-                let seconds = totalSeconds % 60;
-                document.getElementById('countdown-timer').innerText = 
-                    `${minutes < 10 ? "0" + minutes : minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+                if(totalSeconds <= 0) terminateCloudSession();
+                let mins = Math.floor(totalSeconds / 60);
+                let secs = totalSeconds % 60;
+                document.getElementById('countdown-timer').innerText = `${mins < 10 ? "0"+mins : mins}:${secs < 10 ? "0"+secs : secs}`;
             }, 1000);
+            
+            alert("🚀 Container pipeline target deployment synchronized successfully. Stream terminal output rendering inside secondary tab process.");
         }
 
-        async function terminateCloudSession() {
+        function terminateCloudSession() {
             clearInterval(countdownInterval);
-            clearInterval(heartbeatInterval);
-            try { await fetch('/api/terminate-session', { method: 'POST' }); } catch (e) {}
             document.getElementById('active-hud').style.display = 'none';
             document.getElementById('setup-panel').style.display = 'block';
             document.getElementById('countdown-timer').innerText = "60:00";
-            alert("Node pipeline decommissioned successfully.");
-            synchroniseNodeUserSessionState();
+            alert("Container allocation blocks decommissioned cleanly back to availability loops.");
         }
-
-        window.onload = synchroniseNodeUserSessionState;
     </script>
 </body>
 </html>

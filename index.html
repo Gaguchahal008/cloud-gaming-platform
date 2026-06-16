@@ -3,249 +3,266 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus Cloud Matrix - Portal</title>
+    <title>Nexus Matrix — Gateway Node</title>
     <style>
         :root {
-            --bg-main: #02040a;
-            --panel-glass: rgba(6, 11, 25, 0.7);
-            --border-glow: #1e293b;
+            --bg-main: #030712;
+            --panel-glass: rgba(17, 24, 39, 0.7);
+            --border-glow: #1f2937;
             --neon-blue: #38bdf8;
+            --neon-purple: #a855f7;
             --neon-green: #10b981;
             --neon-red: #ef4444;
-            --text-muted: #64748b;
+            --text-muted: #9ca3af;
+            --neon-gradient: linear-gradient(135deg, #38bdf8, #a855f7);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-        body { background-color: var(--bg-main); color: #ffffff; min-height: 100vh; padding: 12px; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-main); color: #ffffff; min-height: 100vh; padding: 12px; -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
         
-        /* HEADER ARCHITECTURE */
-        header { 
-            display: flex; 
-            flex-direction: column;
-            gap: 12px;
-            background: var(--panel-glass);
-            border: 1px solid var(--border-glow);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            padding: 14px; 
-            border-radius: 14px;
-            margin-bottom: 16px;
+        /* RADIAL GLOW ANIMATION EFFECT EFFECT */
+        body::before {
+            content: ''; position: fixed; top: -10%; left: -10%; width: 50%; height: 50%;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.08) 0%, transparent 70%);
+            z-index: -1; pointer-events: none; animation: pulseGlow 8s infinite alternate;
         }
-        
-        .branding h1 { font-size: 18px; font-weight: 900; letter-spacing: 1px; color: var(--neon-blue); text-transform: uppercase; text-shadow: 0 0 15px rgba(56, 189, 248, 0.3); }
-        .branding p { font-size: 10px; color: var(--text-muted); margin-top: 2px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+        @keyframes pulseGlow { 0% { transform: translate(0, 0); } 100% { transform: translate(10%, 10%); } }
+
+        /* HEADER & NAVIGATION HUD */
+        header { 
+            display: flex; flex-direction: column; gap: 14px; background: var(--panel-glass);
+            border: 1px solid var(--border-glow); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            padding: 16px; border-radius: 16px; margin-bottom: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+        }
+        .branding h1 { font-size: 20px; font-weight: 900; letter-spacing: 1.5px; background: var(--neon-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; }
+        .branding p { font-size: 9px; color: var(--text-muted); margin-top: 2px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
         
         .user-status-card { 
-            background: rgba(2, 4, 10, 0.8); 
-            border: 1px solid var(--border-glow); 
-            padding: 10px 12px; 
-            border-radius: 10px; 
-            display: flex; 
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
+            background: rgba(3, 7, 18, 0.9); border: 1px solid var(--border-glow); 
+            padding: 12px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; width: 100%;
         }
         .metrics-group { display: flex; gap: 16px; }
         .status-metric span { display: block; font-size: 8px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; }
         .status-metric b { font-size: 13px; color: #fff; font-weight: 800; }
-        .pricing-link { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; text-decoration: none; padding: 8px 14px; border-radius: 6px; font-size: 11px; font-weight: bold; text-align: center; }
+        .nav-actions { display: flex; gap: 8px; }
+        .btn-nav { background: rgba(31, 41, 55, 0.6); border: 1px solid var(--border-glow); color: #fff; text-decoration: none; padding: 10px 14px; border-radius: 8px; font-size: 11px; font-weight: bold; transition: all 0.2s ease; }
+        .btn-nav:hover, .btn-nav.active { background: #fff; color: var(--bg-main); border-color: #fff; }
+        .pricing-link { background: var(--neon-gradient); color: #fff; text-decoration: none; padding: 10px 14px; border-radius: 8px; font-size: 11px; font-weight: bold; text-align: center; box-shadow: 0 4px 14px rgba(56, 189, 248, 0.2); transition: transform 0.2s; }
+        .pricing-link:active { transform: scale(0.96); }
 
-        /* PROMOTIONAL PLATFORM HERO */
-        .hero { background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), transparent); border: 1px solid rgba(56, 189, 248, 0.15); border-radius: 14px; padding: 14px; margin-bottom: 16px; }
-        .hero h2 { font-size: 15px; margin-bottom: 4px; font-weight: 800; }
-        .hero p { color: #94a3b8; font-size: 12px; line-height: 1.4; }
+        /* SEARCH AND LIBRARY CONTROLS BAR */
+        .library-control-hub { background: var(--panel-glass); border: 1px solid var(--border-glow); border-radius: 14px; padding: 14px; margin-bottom: 16px; backdrop-filter: blur(20px); }
+        .search-box-wrapper { position: relative; width: 100%; margin-bottom: 12px; }
+        .search-input { width: 100%; background: rgba(3, 7, 18, 0.8); border: 1px solid var(--border-glow); border-radius: 8px; padding: 12px 14px 12px 38px; color: #fff; font-size: 13px; outline: none; transition: all 0.25s ease; }
+        .search-input:focus { border-color: var(--neon-blue); box-shadow: 0 0 15px rgba(56, 189, 248, 0.15); }
+        .search-box-wrapper::before { content: '🔍'; position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 12px; opacity: 0.6; }
         
-        .section-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; font-weight: bold; padding-left: 2px; }
-        
-        /* MOBILE-FIRST COMPACT GRID (HORIZONTAL SWIPE LIST FOR PHONES) */
-        .game-grid { 
-            display: flex; 
-            overflow-x: auto; 
-            gap: 14px; 
-            padding-bottom: 12px;
-            scroll-snap-type: x mandatory;
-            scrollbar-width: none; /* Hide standard Firefox scrollbar */
-        }
-        .game-grid::-webkit-scrollbar { display: none; } /* Hide Chrome/Safari scrollbar */
+        .filter-tags-row { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+        .filter-tags-row::-webkit-scrollbar { display: none; }
+        .tag-chip { background: rgba(31, 41, 55, 0.5); border: 1px solid var(--border-glow); padding: 8px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+        .tag-chip.active, .tag-chip:hover { background: var(--neon-gradient); color: #fff; border-color: transparent; box-shadow: 0 4px 12px rgba(168, 85, 247, 0.2); }
+
+        /* FLUID RESPONSIVE GRID ENGINE */
+        .section-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 12px; font-weight: 800; padding-left: 2px; }
+        .game-grid { display: flex; overflow-x: auto; gap: 14px; padding-bottom: 12px; scroll-snap-type: x mandatory; scrollbar-width: none; }
+        .game-grid::-webkit-scrollbar { display: none; }
         
         .game-card { 
-            background: var(--panel-glass); 
-            border: 1px solid var(--border-glow); 
-            border-radius: 14px; 
-            overflow: hidden; 
-            display: flex; 
-            flex-direction: column; 
-            text-decoration: none; 
-            color: #fff;
-            min-width: 270px; /* Fixed width forces horizontal stacking on mobile */
-            width: 270px;
-            scroll-snap-align: start;
+            background: var(--panel-glass); border: 1px solid var(--border-glow); border-radius: 16px; overflow: hidden; 
+            display: flex; flex-direction: column; text-decoration: none; color: #fff; min-width: 280px; width: 280px; scroll-snap-align: start;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); position: relative;
         }
+        .game-card::after { content: ''; position: absolute; inset: 0; border-radius: 16px; border: 1px solid transparent; background: var(--neon-gradient) border-box; -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0); -webkit-mask-composite: destination-out; mask-composite: exclude; opacity: 0; transition: opacity 0.3s; }
+        .game-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.7); }
+        .game-card:hover::after { opacity: 0.5; }
         
-        .card-banner { height: 130px; background-size: cover; background-position: center; position: relative; }
-        .card-tag { position: absolute; top: 10px; left: 10px; background: rgba(2, 4, 10, 0.85); border: 1px solid rgba(255,255,255,0.08); padding: 4px 8px; border-radius: 4px; font-size: 8px; font-weight: 700; text-transform: uppercase; }
+        .card-banner { height: 140px; background-size: cover; background-position: center; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .card-banner::before { content: ''; position: absolute; inset: 0; background: rgba(3, 7, 18, 0.35); z-index: 1; transition: background 0.3s; }
+        .game-card:hover .card-banner::before { background: rgba(3, 7, 18, 0.15); }
         
-        .card-body { padding: 14px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        .card-body h3 { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
-        .card-body p { font-size: 11px; color: #94a3b8; line-height: 1.4; margin-bottom: 14px; }
+        .game-logo { max-width: 75%; max-height: 70px; object-fit: contain; filter: drop-shadow(0px 6px 12px rgba(0, 0, 0, 0.95)); z-index: 2; transition: transform 0.3s ease; }
+        .game-card:hover .game-logo { transform: scale(1.06); }
+        .card-tag { position: absolute; top: 12px; left: 12px; background: rgba(3, 7, 18, 0.85); border: 1px solid rgba(255,255,255,0.08); padding: 5px 10px; border-radius: 6px; font-size: 8px; font-weight: 800; text-transform: uppercase; z-index: 3; letter-spacing: 0.5px; }
         
-        .action-indicator { border-top: 1px solid rgba(30, 41, 59, 0.5); padding-top: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .rate-badge { font-size: 9px; color: var(--neon-blue); font-weight: 700; text-transform: uppercase; }
-        .enter-btn { font-size: 11px; font-weight: bold; color: #fff; background: rgba(30, 41, 59, 0.6); padding: 8px 12px; border-radius: 6px; border: 1px solid #334155; }
+        .card-body { padding: 16px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .card-body h3 { font-size: 17px; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.3px; }
+        .card-body p { font-size: 11px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px; }
+        
+        .action-indicator { border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .rate-badge { font-size: 9px; color: var(--neon-blue); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+        .enter-btn { font-size: 11px; font-weight: 800; color: #fff; background: rgba(255,255,255,0.05); padding: 8px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); transition: all 0.25s; }
+        .game-card:hover .enter-btn { background: #fff; color: var(--bg-main); border-color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.3); }
 
-        /* TABLET & DESKTOP OVERRIDES (RESTORES EXPANDIVE LAYOUT ON WIDER SCREENS) */
+        .empty-state { display: none; text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 13px; background: var(--panel-glass); border: 1px dashed var(--border-glow); border-radius: 14px; }
+
+        /* WIDESCREEN & DESKTOP RESOLUTIONS */
         @media (min-width: 640px) {
-            body { padding: 24px 4% 40px 4%; }
-            header { flex-direction: row; justify-content: space-between; align-items: center; padding: 20px; margin-bottom: 24px; border-radius: 16px; }
-            .branding h1 { font-size: 22px; }
-            .branding p { font-size: 11px; }
-            .user-status-card { width: auto; gap: 24px; padding: 12px 20px; border-radius: 12px; }
-            .status-metric span { font-size: 9px; }
-            .status-metric b { font-size: 15px; }
-            .pricing-link { padding: 12px 18px; border-radius: 8px; font-size: 12px; }
+            body { padding: 24px 6% 40px 6%; }
+            header { flex-direction: row; justify-content: space-between; align-items: center; padding: 20px; margin-bottom: 24px; border-radius: 20px; }
+            .branding h1 { font-size: 24px; }
+            .user-status-card { width: auto; gap: 24px; padding: 12px 20px; border-radius: 14px; }
             
-            .hero { padding: 36px 30px; margin-bottom: 24px; border-radius: 20px; }
-            .hero h2 { font-size: 26px; margin-bottom: 8px; }
-            .hero p { font-size: 13px; line-height: 1.6; }
+            .library-control-hub { padding: 18px; margin-bottom: 24px; display: flex; gap: 16px; align-items: center; justify-content: space-between; }
+            .search-box-wrapper { max-width: 300px; margin-bottom: 0; }
+            .filter-tags-row { padding-bottom: 0; }
+
             .section-title { font-size: 11px; margin-bottom: 16px; }
-
-            /* Switch from swipe carousel row back to clean grid system layout */
-            .game-grid { 
-                display: grid; 
-                grid-template-columns: repeat(2, 1fr); 
-                gap: 24px; 
-                overflow-x: visible;
-                padding-bottom: 0;
-            }
-            .game-card { 
-                min-width: 0; 
-                width: auto; 
-                border-radius: 16px;
-                transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
-            }
-            .game-card:hover { border-color: var(--neon-blue); box-shadow: 0 12px 30px rgba(56, 189, 248, 0.06); }
-            .game-card:active { transform: scale(0.99); }
+            .game-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; overflow-x: visible; padding-bottom: 0; }
+            .game-card { min-width: 0; width: auto; border-radius: 20px; }
             .card-banner { height: 160px; }
-            .card-body { padding: 18px; }
-            .card-body h3 { font-size: 18px; margin-bottom: 6px; }
-            .card-body p { font-size: 12px; margin-bottom: 20px; line-height: 1.5; }
-            .action-indicator { padding-top: 14px; }
-            .enter-btn { font-size: 12px; padding: 10px 16px; border-radius: 8px; transition: 0.2s; }
-            .game-card:hover .enter-btn { background: var(--neon-blue); color: var(--bg-main); border-color: var(--neon-blue); font-weight: 700; box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); }
+            .game-logo { max-height: 80px; }
+            .card-body { padding: 20px; }
+            .card-body h3 { font-size: 19px; }
+            .card-body p { font-size: 12px; margin-bottom: 20px; }
+            .enter-btn { font-size: 12px; padding: 10px 16px; }
         }
-
         @media (min-width: 1024px) {
             .game-grid { grid-template-columns: repeat(3, 1fr); }
-            body { padding: 40px 6%; }
-            .hero h2 { font-size: 30px; }
+            body { padding: 32px 8%; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ADAPTIVE HEADER NODE -->
     <header>
         <div class="branding">
             <h1>Nexus Matrix</h1>
-            <p>Automated Bare-Metal Deployment Engine</p>
+            <p>Compute Cloud Grid Pipeline</p>
         </div>
         
         <div class="user-status-card">
             <div class="metrics-group">
                 <div class="status-metric">
-                    <span>Cluster Identity</span>
-                    <b id="lbl-gamertag">Loading...</b>
+                    <span>Identity Block</span>
+                    <b id="lbl-gamertag">Young Goat</b>
                 </div>
                 <div class="status-metric">
-                    <span>Time Credits</span>
-                    <b id="lbl-playtime" style="color: var(--neon-red);">0 Mins</b>
+                    <span>Credits</span>
+                    <b id="lbl-playtime" style="color: var(--neon-green);">120 Mins</b>
                 </div>
             </div>
-            <a href="/pages/pricing.html" class="pricing-link">Top Up</a>
+            <div class="nav-actions">
+                <a href="/" class="btn-nav active">Library</a>
+                <a href="/pages/account.html" class="btn-nav">Account</a>
+                <a href="/pages/pricing.html" class="pricing-link">+ Credit</a>
+            </div>
         </div>
     </header>
 
-    <!-- PROMOTIONAL HERO BANNER -->
-    <div class="hero">
-        <h2>Unthrottled Cloud Hardware PC</h2>
-        <p>Choose an execution configuration image below. Initialize your Steam authentication profile, then provision an elite physical node cluster to run low-latency streaming desktop sessions.</p>
+    <div class="library-control-hub">
+        <div class="search-box-wrapper">
+            <input type="text" class="search-input" id="library-search" placeholder="Query active clusters..." oninput="executeClientSearchFilter()">
+        </div>
+        <div class="filter-tags-row">
+            <div class="tag-chip active" onclick="filterCategory(this, 'all')">All Nodes</div>
+            <div class="tag-chip" onclick="filterCategory(this, 'action')">Action</div>
+            <div class="tag-chip" onclick="filterCategory(this, 'racing')">Racing</div>
+            <div class="tag-chip" onclick="filterCategory(this, 'sandbox')">Sandbox</div>
+        </div>
     </div>
 
-    <div class="section-title">Available Blade Clusters</div>
+    <div class="section-title">Available Computing Clusters</div>
 
-    <!-- RESPONSIVE DUAL-VIEWPORT CARDS CONTAINER -->
-    <div class="game-grid">
-        <!-- NODE: GTA V -->
-        <a href="/pages/game.html?id=gta5" class="game-card">
+    <div class="game-grid" id="matrix-grid-viewport">
+        
+        <a href="/pages/game.html?id=gta5" class="game-card" data-title="grand theft auto v gta5 rockstar" data-cat="action sandbox">
             <div class="card-banner" style="background-image: url('https://images2.alphacoders.com/474/474439.jpg');">
-                <div class="card-tag" style="color: var(--neon-green);">Pre-Caches Ready</div>
+                <div class="card-tag" style="color: var(--neon-green);">Pre-Caches Active</div>
+                <img src="https://wallpaperaccess.com/full/2800266.jpg" alt="GTA V Logo" class="game-logo">
             </div>
             <div class="card-body">
                 <div>
                     <h3>Grand Theft Auto V</h3>
-                    <p>Launches inside specialized hypervisors running high-performance physical disk arrays for instantly fast loads.</p>
+                    <p>Launches inside hypervisors running high-performance physical enterprise arrays for raw unthrottled performance.</p>
                 </div>
                 <div class="action-indicator">
                     <span class="rate-badge">60 Mins Block</span>
-                    <span class="enter-btn">Configure Node →</span>
+                    <span class="enter-btn">Configure Unit →</span>
                 </div>
             </div>
         </a>
 
-        <!-- NODE: CYBERPUNK 2077 -->
-        <a href="/pages/game.html?id=cyberpunk" class="game-card">
+        <a href="/pages/game.html?id=cyberpunk" class="game-card" data-title="cyberpunk 2077 rtx cd projekt red" data-cat="action">
             <div class="card-banner" style="background-image: url('https://images4.alphacoders.com/114/1147721.jpg');">
                 <div class="card-tag" style="color: #eab308;">Dedicated RTX 4080</div>
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRpK5tsvixklUzWonB3lBRHJywc-pc6gl4_mA&s" alt="Cyberpunk Logo" class="game-logo">
             </div>
             <div class="card-body">
                 <div>
                     <h3>Cyberpunk 2077</h3>
-                    <p>Configured with pure high-bandwidth pipelines targeting stable unthrottled graphical configurations natively.</p>
+                    <p>Configured with ultra high-bandwidth virtualization rendering ray-traced desktop frame feeds natively.</p>
                 </div>
                 <div class="action-indicator">
                     <span class="rate-badge">60 Mins Block</span>
-                    <span class="enter-btn">Configure Node →</span>
+                    <span class="enter-btn">Configure Unit →</span>
                 </div>
             </div>
         </a>
 
-        <!-- NODE: BARE METAL WINDOWS -->
-        <a href="/pages/game.html?id=blank_desktop" class="game-card">
+        <a href="/pages/game.html?id=forza6" class="game-card" data-title="forza horizon fh6 microsoft racing" data-cat="racing sandbox">
             <div class="card-banner" style="background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop');">
-                <div class="card-tag" style="color: var(--neon-blue);">Administrative Sandbox</div>
+                <div class="card-tag" style="color: var(--neon-blue);">Ultra Settings Engine</div>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/7/77/FH6_Logo.png" alt="Forza 6 Logo" class="game-logo">
             </div>
             <div class="card-body">
                 <div>
-                    <h3>Bare Windows 11 PC</h3>
-                    <p>A completely fresh, high-spec OS space allocation block. Complete control to install custom configurations or alternative applications.</p>
+                    <h3>Forza Horizon 6</h3>
+                    <p>Experience realistic hyper-car racing metrics with low processing overhead and smooth response speeds.</p>
                 </div>
                 <div class="action-indicator">
                     <span class="rate-badge">60 Mins Block</span>
-                    <span class="enter-btn">Configure Node →</span>
+                    <span class="enter-btn">Configure Unit →</span>
                 </div>
             </div>
         </a>
     </div>
 
+    <div class="empty-state" id="search-fallback-notice">
+        No active blade allocations match your target tracking configuration query string variables.
+    </div>
+
     <script>
+        let currentSelectedCategory = 'all';
+
+        function filterCategory(element, category) {
+            document.querySelectorAll('.tag-chip').forEach(chip => chip.classList.remove('active'));
+            element.classList.add('active');
+            currentSelectedCategory = category;
+            executeClientSearchFilter();
+        }
+
+        function executeClientSearchFilter() {
+            const query = document.getElementById('library-search').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.game-card');
+            let matchedVisibleElementsCount = 0;
+
+            cards.forEach(card => {
+                const searchTags = card.getAttribute('data-title');
+                const categories = card.getAttribute('data-cat');
+                
+                const matchesSearch = searchTags.includes(query);
+                const matchesCategory = (currentSelectedCategory === 'all' || categories.includes(currentSelectedCategory));
+
+                if (matchesSearch && matchesCategory) {
+                    card.style.display = 'flex';
+                    matchedVisibleElementsCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            document.getElementById('search-fallback-notice').style.display = (matchedVisibleElementsCount === 0) ? 'block' : 'none';
+        }
+
         async function fetchSystemStateHandshakes() {
             try {
                 const res = await fetch('/api/user-status');
-                if (!res.ok) throw new Error("Database link fault.");
-                const data = await res.json();
-                
-                document.getElementById('lbl-gamertag').innerText = data.gamertag;
-                const timeLabel = document.getElementById('lbl-playtime');
-                timeLabel.innerText = `${data.playtimeMinutes} Mins`;
-                
-                if (data.playtimeMinutes >= 60) {
-                    timeLabel.style.color = "var(--neon-green)"; 
-                } else {
-                    timeLabel.style.color = "var(--neon-red)"; 
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('lbl-gamertag').innerText = data.gamertag || "Young Goat";
+                    document.getElementById('lbl-playtime').innerText = `${data.playtimeMinutes || 0} Mins`;
                 }
-            } catch(e) {
-                console.error("Gateway runtime synchronization failed.");
-            }
+            } catch(e) {}
         }
         window.onload = fetchSystemStateHandshakes;
     </script>

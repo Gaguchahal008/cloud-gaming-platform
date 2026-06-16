@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Cloud Matrix - Account Command Center</title>
+    <style>
+        :root {
+            --bg-main: #030712;
+            --panel-glass: rgba(17, 24, 39, 0.7);
+            --border-glow: #1f2937;
+            --neon-blue: #38bdf8;
+            --neon-purple: #a855f7;
+            --neon-green: #10b981;
+            --neon-red: #ef4444;
+            --text-muted: #9ca3af;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        body { background-color: var(--bg-main); color: #ffffff; min-height: 100vh; padding: 12px; -webkit-tap-highlight-color: transparent; }
+        
+        /* HEADER HUD HUD BAR */
+        header { 
+            display: flex; flex-direction: column; gap: 14px; background: var(--panel-glass);
+            border: 1px solid var(--border-glow); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            padding: 16px; border-radius: 16px; margin-bottom: 20px;
+        }
+        .branding h1 { font-size: 20px; font-weight: 900; letter-spacing: 1.5px; background: linear-gradient(135deg, #38bdf8, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; }
+        .branding p { font-size: 9px; color: var(--text-muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .user-status-card { 
+            background: rgba(3, 7, 18, 0.9); border: 1px solid var(--border-glow); 
+            padding: 12px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; width: 100%;
+        }
+        .metrics-group { display: flex; gap: 16px; }
+        .status-metric span { display: block; font-size: 8px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; }
+        .status-metric b { font-size: 13px; color: #fff; font-weight: 800; }
+        .nav-actions { display: flex; gap: 8px; }
+        .btn-nav { background: rgba(31, 41, 55, 0.6); border: 1px solid var(--border-glow); color: #fff; text-decoration: none; padding: 10px 14px; border-radius: 8px; font-size: 11px; font-weight: bold; transition: 0.2s; }
+        .btn-nav:hover, .btn-nav.active { background: #fff; color: var(--bg-main); border-color: #fff; }
+
+        /* MAIN ACCOUNT ROW DIVISION */
+        .account-container-layout { display: flex; flex-direction: column; gap: 20px; }
+        
+        /* USER PROFILE PROFILE GRID TILES */
+        .profile-card-panel { background: var(--panel-glass); border: 1px solid var(--border-glow); border-radius: 16px; padding: 20px; backdrop-filter: blur(20px); text-align: center; position: relative; overflow: hidden; }
+        .profile-avatar-wrapper { width: 80px; height: 80px; background: linear-gradient(135deg, #2563eb, #a855f7); border-radius: 50%; margin: 0 auto 14px auto; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 900; box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); }
+        .profile-card-panel h2 { font-size: 20px; font-weight: 900; margin-bottom: 4px; }
+        .profile-card-panel p { font-size: 11px; color: var(--neon-blue); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; }
+        
+        .account-mini-metrics-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; background: rgba(3,7,18,0.5); padding: 12px; border-radius: 12px; border: 1px solid var(--border-glow); }
+        .metric-block span { display: block; font-size: 8px; color: var(--text-muted); text-transform: uppercase; font-weight: bold; }
+        .metric-block b { font-size: 14px; color: #fff; }
+
+        /* CONNECTIVITY CONFIGURATION FORMS CONTAINER */
+        .settings-card-panel { background: var(--panel-glass); border: 1px solid var(--border-glow); border-radius: 16px; padding: 20px; backdrop-filter: blur(20px); }
+        .settings-card-panel h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #fff; margin-bottom: 16px; border-bottom: 1px solid var(--border-glow); padding-bottom: 8px; }
+        
+        .form-group-item { margin-bottom: 14px; text-align: left; }
+        .form-group-item label { display: block; font-size: 9px; text-transform: uppercase; color: var(--text-muted); font-weight: bold; margin-bottom: 6px; letter-spacing: 0.5px; }
+        .form-input-element { width: 100%; background: rgba(3, 7, 18, 0.8); border: 1px solid var(--border-glow); padding: 12px; border-radius: 8px; color: #fff; font-size: 13px; outline: none; }
+        .form-input-element:focus { border-color: var(--neon-blue); }
+        .btn-update-submit { background: var(--neon-gradient); color: #fff; border: none; padding: 12px; font-size: 12px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 6px; }
+
+        /* SESSION HISTORY LOG TABLE */
+        .logs-card-panel { background: var(--panel-glass); border: 1px solid var(--border-glow); border-radius: 16px; padding: 20px; backdrop-filter: blur(20px); }
+        .logs-card-panel h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #fff; margin-bottom: 14px; }
+        .logs-table-wrapper { width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 12px; }
+        th { padding: 10px; color: var(--text-muted); border-bottom: 1px solid var(--border-glow); text-transform: uppercase; font-size: 9px; font-weight: bold; }
+        td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.03); color: #e5e7eb; }
+        .badge-table { padding: 3px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; text-transform: uppercase; }
+
+        /* TABLET & LAPTOP DESKTOP ENGINE RESOLUTIONS */
+        @media (min-width: 640px) {
+            body { padding: 24px 6% 40px 6%; }
+            header { flex-direction: row; justify-content: space-between; align-items: center; padding: 20px; border-radius: 20px; }
+            .branding h1 { font-size: 24px; }
+            .user-status-card { width: auto; gap: 24px; padding: 12px 20px; border-radius: 14px; }
+            
+            .account-container-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 24px; align-items: start; }
+            .logs-card-panel { grid-column: span 2; }
+        }
+        @media (min-width: 1024px) {
+            body { padding: 32px 8%; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="branding">
+            <h1>Nexus Matrix</h1>
+            <p>Compute Cloud Grid Pipeline</p>
+        </div>
+        
+        <div class="user-status-card">
+            <div class="metrics-group">
+                <div class="status-metric">
+                    <span>Identity Block</span>
+                    <b>Young Goat</b>
+                </div>
+                <div class="status-metric">
+                    <span>Credits</span>
+                    <b style="color: var(--neon-green);">120 Mins</b>
+                </div>
+            </div>
+            <div class="nav-actions">
+                <a href="/" class="btn-nav">Library</a>
+                <a href="/pages/account.html" class="btn-nav active">Account</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="account-container-layout">
+        
+        <div class="profile-card-panel">
+            <div class="profile-avatar-wrapper">🐐</div>
+            <h2>Young Goat</h2>
+            <p>Matrix Core Veteran</p>
+            
+            <div class="account-mini-metrics-row">
+                <div class="metric-block">
+                    <span>Total Sessions</span>
+                    <b>42 Nodes</b>
+                </div>
+                <div class="metric-block">
+                    <span>Node Status</span>
+                    <b style="color: var(--neon-blue);">Idle</b>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-card-panel">
+            <h3>Identity Security Parameters</h3>
+            <form id="profile-management-form" onsubmit="saveClientAccountChanges(event)">
+                <div class="form-group-item">
+                    <label>Terminal Username Identity</label>
+                    <input type="text" class="form-input-element" id="input-username" value="Young Goat" required>
+                </div>
+                <div class="form-group-item">
+                    <label>Secure Communication Mail Delivery</label>
+                    <input type="email" class="form-input-element" id="input-email" value="amritinder@nexus.io">
+                </div>
+                <button type="submit" class="btn-update-submit">Commit Core Parameter Changes</button>
+            </form>
+        </div>
+
+        <div class="logs-card-panel">
+            <h3>Vm Allocation Node Execution Audit Trail Log</h3>
+            <div class="logs-table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Deployment ID Reference</th>
+                            <th>Target Image Machine</th>
+                            <th>Time Block Interval</th>
+                            <th>Provisioning Audit Code</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="font-family:monospace; color:var(--neon-blue);">node_4080_a8f1</td>
+                            <td>Grand Theft Auto V</td>
+                            <td>60 Minutes</td>
+                            <td><span class="badge-table" style="background: rgba(16,185,129,0.1); color: var(--neon-green);">Terminated</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-family:monospace; color:var(--neon-blue);">node_4080_b99d</td>
+                            <td>Cyberpunk 2077</td>
+                            <td>60 Minutes</td>
+                            <td><span class="badge-table" style="background: rgba(16,185,129,0.1); color: var(--neon-green);">Terminated</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function saveClientAccountChanges(event) {
+            event.preventDefault();
+            const updatedUser = document.getElementById('input-username').value;
+            alert(`✅ Terminal System Parameter Registry Saved: User identifier updated successfully to "${updatedUser}"`);
+        }
+    </script>
+</body>
+</html>
